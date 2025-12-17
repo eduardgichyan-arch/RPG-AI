@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat RPG - Cosmic Edition</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="container main-layout">
+        <!-- Sidebar -->
+        <div class="glass-panel profile-sidebar">
+            <h2 class="sidebar-title">Your Profile</h2>
+
+            <!-- New Avatar Section -->
+            <div class="profile-avatar-container">
+                <div class="profile-avatar">
+                    <span id="avatar-initials">P</span>
+                </div>
+            </div>
+
+            <div class="sidebar-info-block centered-info">
+                <div class="label-sm">Personality Type</div>
+                <div class="type-badge">
+                    <span class="type-lg" id="sidebar-type">Scanning...</span>
+                </div>
+                <div class="type-desc" id="sidebar-desc">Analysis in progress...</div>
+            </div>
+
+            <div class="separator-line"></div>
+
+            <!-- Level -->
+            <div class="sidebar-info-block centered-info">
+                <div class="label-sm">Current Level</div>
+                <div class="level-display">
+                    <span id="sidebar-level">1</span> <span class="text-muted">/ 100</span>
+                </div>
+            </div>
+
+            <div class="separator-line"></div>
+
+            <div class="sidebar-section">
+                <h4 class="section-title">Core Statistics</h4>
+                <div id="sidebar-stats" class="stats-list">
+                    <!-- Stats injected here -->
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="/dashboard.html" class="btn btn-full">Dashboard ➜</a>
+            </div>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="glass-panel chat-container">
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="header-title">
+                    <h1>⭐ AI Chat RPG</h1>
+                    <div class="header-stats">
+                        <span>Lvl <strong id="level">1</strong></span>
+                        <span>XP <strong id="xp">0/100</strong></span>
+                        <span>Focus <strong id="focus">50</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-area" id="chat">
+                <div class="message ai">
+                    <div class="message-bubble">
+                        Greetings, Traveler! I am your AI Guide. Speak with me to earn XP, level up, and unlock your
+                        true potential. 🌌
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <input id="message-input" placeholder="Ask me anything..." autocomplete="off">
+                </div>
+                <button id="sendBtn" class="send-btn" title="Send Message">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logic -->
+    <script src="script.js"></script>
+    <script src="quiz.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+Edo:
+
+I think the RPG direction is really awesome.
+
+Things that I think could really help with your journey:
+
+1. Look at existing AI based RPG games, play around with them
+Understand what you like and what you don't like about them.
+
+2. Build your game around the 1 central feature that you think is the 
+most interesting/exciting of the AI based RPG games that you experienced.
+
+AI Dungeon is the one that I know. 
+
+Write a short game design/game concept document, and let AI prototype it and have a feel for it.
+
+To make it easier, start with a chat based game.
+
+I really like the exp system. I am thinking like what are designs of other
+- Reward systems
+- Stories inside the games 
+- Characters gaining skills/attributes
+- HP
+
+1. Look at the relationship between the files
+(What each file is doing)
+(What architectural reasons are the different files occupying)
+
+2. Look at the main functions inside each file, and what the functions are doing
+
+3, Understand the flow of data (this is the most important thing when debugging full-stack applications)
+
+What I mean by understanding the data flow is this:
+
+I, as a user, goes to http://localhost:3000/dashboard.html.
+
+This event is handled by the frontend. Questions: a) What file has the logic, b) Which functions is handling that logic
+
+The frontend has to give this to the backend. Questions: a) What file has the logic, b) Which functions is handling that logic
+c) Where are the data stored in the backedn?
+(Question c) is important for you since you need to store all of these statistics, and these statistics are stored in the backend)
+
+The backend gives the data back to the frontend, and is displayed to the user.
+
+4. Which part of the data flow is wrong? How is the data not flowing over back to me as the user?
+
+To diagnose this, add logging. Eliminate steps of the data flow that is working, and focus on the ones that may not work.
+

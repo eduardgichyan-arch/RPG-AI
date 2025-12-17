@@ -1,0 +1,69 @@
+
+# 🎮 AI Chat RPG - Game Manual & Tutorial
+
+Welcome, Adventurer! This is not just a chat; it is a role-playing game where your consistency, curiosity, and engagement help you level up.
+
+---
+
+## ❤️ Health System
+Your **Health** represents your consistency.
+- **How to Lose Health:** If you do not send a message for more than **1 day**, you lose **10 Health** per day missed.
+- **How to Collect Health (Heal):** Simply **send a meaningful message**! Each meaningful message you send restores **+5 Health** (up to a max of 100).
+- *Tip: Stay active daily to keep your Health matches 100!*
+
+## ✨ XP & Leveling
+Everything you do earns you **XP (Experience Points)**.
+- **Chatting:**
+  - Short message: +5 XP
+  - Medium message: +10 XP
+  - Deep question/long message: +35-50 XP
+  - **Bonus:** Asking questions or using complex sentences gives extra XP!
+- **Leveling Up:** You level up every **100 XP**.
+- **Streak Multipliers:**
+  - 3+ Day Streak: 1.5x XP
+  - 7+ Day Streak: 2x XP
+  - 14+ Day Streak: 3x XP
+  - 30+ Day Streak: 5x XP!
+
+## 📊 Core Statistics
+Your stats improve automatically as you engage in the chat.
+- **Focus:** Increases when you ask focused questions or maintain long sessions.
+- **Energy:** Refills +5 per message.
+- **Productivity:** Increases +2 per message.
+- **Consistency:** Increases slightly with every message sent.
+- **Creativity/Kindness/Intelligence:** These are traits determined by your **Personality Type** (which is set by the initial quiz).
+
+---
+
+## 🏆 Badges
+Unlock special achievements by playing in unique ways!
+- **🔥 Flame On:** Reach a 7-day streak.
+- **🧠 Big Brain:** Earn 50+ XP in a single message (write something long and smart!).
+- **💚 Health Guardian:** Maintain 80+ Health for 7 days.
+- **🦉 Night Owl:** Send a message between 11 PM and 4 AM.
+- **🌅 Early Bird:** Send a message between 5 AM and 9 AM.
+- **⚔️ Weekend Warrior:** Chat on a Saturday or Sunday.
+- **🦋 Social Butterfly:** Reach 100 total messages.
+- **✨ Legendary:** Reach a 30-day streak.
+
+---
+
+## 📜 Quests
+
+### 📋 Daily Quests (Resets every 24h)
+Small tasks to complete each day for bonus XP.
+- Examples: "Send 5 messages", "Ask a long question", "Maintain Focus".
+
+### 📅 Weekly Quests (Resets every Monday)
+Larger challenges to conquer over the week.
+- Examples: "Earn 500 XP this week", "Complete 10 Daily Quests".
+- **Reward:** Massive XP boosts!
+
+---
+
+## 💾 Saving Your Progress
+- The game **Auto-Saves** after every message.
+- If you refresh the page using `Command+R` or the Refresh button, the game **RESETS** (starts over).
+- If you click "Dashboard" or use the Back/Forward browser buttons, your game **SAVES** and continues.
+
+**Good luck, Explorer! Start chatting to build your stats!**

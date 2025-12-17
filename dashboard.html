@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Chat RPG</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h1>📊 Dashboard</h1>
+            <a href="/" class="btn">← Back to Chat</a>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="stats">📈 Statistics</button>
+            <button class="tab-btn" data-tab="badges">🏆 Badges</button>
+            <button class="tab-btn" data-tab="quests">📋 Daily Quests</button>
+            <button class="tab-btn" data-tab="weekly">📅 Weekly Quests</button>
+        </div>
+
+        <!-- STATS TAB -->
+        <div id="stats" class="tab-content active">
+            <div id="stats-loading" style="text-align: center; padding: 40px; opacity: 0.7;">
+                <span class="loading-spinner"></span> Loading stats...
+            </div>
+            <div id="stats-content" style="display: none;"></div>
+        </div>
+
+        <!-- BADGES TAB -->
+        <div id="badges" class="tab-content">
+            <div id="badges-loading" style="text-align: center; padding: 40px; opacity: 0.7;">
+                <span class="loading-spinner"></span> Loading badges...
+            </div>
+            <div id="badges-content"></div>
+        </div>
+
+        <!-- QUESTS TAB -->
+        <div id="quests" class="tab-content">
+            <div id="quests-loading" style="text-align: center; padding: 40px; opacity: 0.7;">
+                <span class="loading-spinner"></span> Loading quests...
+            </div>
+            <div id="quests-content"></div>
+        </div>
+
+        <!-- WEEKLY QUESTS TAB -->
+        <div id="weekly" class="tab-content">
+            <div id="weekly-loading" style="text-align: center; padding: 40px; opacity: 0.7;">
+                <span class="loading-spinner"></span> Loading weekly quests...
+            </div>
+            <div id="weekly-content"></div>
+        </div>
+
+    </div>
+
+    <script src="dashboard.js?v=3"></script>
+
+</body>
+
+</html>

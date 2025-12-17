@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Statistics - AI Chat RPG</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=2">
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="glass-panel"
+      style="padding: 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+      <h1 style="font-size: 24px;">📊 Live Statistics</h1>
+      <a href="/" class="btn">← Back</a>
+    </div>
+
+    <div class="grid-layout">
+      <!-- Player Profile -->
+      <div class="glass-panel stat-card" style="grid-column: 1 / -1;">
+        <div style="display: flex; gap: 20px; align-items: center;">
+          <div
+            style="font-size: 48px; background: rgba(255,255,255,0.1); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;"
+            id="titleIcon">
+            🌱
+          </div>
+          <div>
+            <h2 id="playerName" style="margin-bottom: 5px;">Adventurer</h2>
+            <div style="font-size: 14px; opacity: 0.7; margin-bottom: 10px;">Level <span id="playerLevel">1</span> •
+              <span id="titleName">Beginner</span>
+            </div>
+            <div style="font-size: 13px; margin-bottom: 5px;" id="titleProgress">Loading...</div>
+            <div class="progress-bar" style="width: 0%; height: 6px;" id="titleProgressBar"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- XP Progress -->
+      <div class="glass-panel stat-card">
+        <div class="stat-header">XP Progress</div>
+        <div class="stat-row">
+          <span>Total XP</span>
+          <strong id="totalXp">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Current Level</span>
+          <strong id="currentXp">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Next Level</span>
+          <strong id="xpForNext">0</strong>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" id="levelProgressBar" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Activity -->
+      <div class="glass-panel stat-card">
+        <div class="stat-header">Activity Streak</div>
+        <div class="stat-row">
+          <span>Current</span>
+          <strong id="currentStreak">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Longest</span>
+          <strong id="longestStreak">0</strong>
+        </div>
+        <div class="stat-row">
+          <span>Days Active</span>
+          <strong id="totalDaysActive">0</strong>
+        </div>
+      </div>
+
+      <!-- Core Stats Grid -->
+      <div class="glass-panel stat-card" style="grid-column: 1 / -1;">
+        <div class="stat-header">Core Stats</div>
+        <div id="coreStats"
+          style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+
+      <!-- Badges Preview -->
+      <div class="glass-panel stat-card" style="grid-column: 1 / -1;">
+        <div class="stat-header">Badge Collection</div>
+        <div id="badgesContainer" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="stats.js?v=4"></script>
+
+</body>
+
+</html>
