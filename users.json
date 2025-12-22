@@ -1,0 +1,52 @@
+{
+  "WG026928": {
+    "playerId": "WG026928",
+    "username": "Ed",
+    "password": "Ed",
+    "gameState": {
+      "player": {
+        "name": "Ed",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 22,
+        "lastMessageDay": "Mon Dec 22 2025",
+        "lastMessageTime": 1766412879965,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "playerId": "WG026928"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Mon Dec 22 2025",
+      "lastWeeklyQuestGenDate": "Mon Dec 22 2025",
+      "messageCount": 0
+    }
+  }
+}

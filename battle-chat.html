@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle Arena Chat | RPG AI</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css?v=3">
+
+    <style>
+        /* ============================================
+           BATTLE CHAT SPLIT LAYOUT
+           ============================================ */
+
+        body {
+            overflow: hidden;
+        }
+
+        .battle-chat-container {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* Left side: Battle Progress */
+        .battle-sidebar {
+            width: 35%;
+            min-width: 280px;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.4);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .battle-sidebar h2 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .room-code-display {
+            text-align: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .room-code-display span {
+            font-weight: 800;
+            color: white;
+            font-size: 18px;
+        }
+
+        .battle-status {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            padding: 8px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Player Cards in Sidebar */
+        .player-mini-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .player-mini-card.you {
+            border-color: var(--primary-color);
+            background: rgba(0, 210, 255, 0.05);
+        }
+
+        .player-mini-card.opponent {
+            border-color: var(--accent-color);
+            background: rgba(255, 0, 153, 0.05);
+        }
+
+        .player-mini-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .player-mini-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .player-mini-card.you .player-mini-avatar {
+            background: var(--primary-color);
+            color: black;
+        }
+
+        .player-mini-card.opponent .player-mini-avatar {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .player-mini-info h3 {
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .player-mini-info .level {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .player-xp-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .player-xp-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .player-mini-card.you .player-xp-fill {
+            background: var(--primary-color);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .player-mini-card.opponent .player-xp-fill {
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .player-xp-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .vs-divider {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 5px 0;
+        }
+
+        .back-to-arena-btn {
+            margin-top: auto;
+            text-align: center;
+        }
+
+        .back-to-arena-btn a {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 12px;
+        }
+
+        /* Right side: Chat (reuse existing styles) */
+        .chat-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .chat-side .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border-radius: 0;
+            height: 100vh;
+        }
+
+        .chat-side .chat-area {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* ============================================
+           MOBILE: Floating Bar + Full Chat
+           ============================================ */
+
+        @media (max-width: 900px) {
+            .battle-chat-container {
+                flex-direction: column;
+            }
+
+            .battle-sidebar {
+                display: none;
+                /* Hide full sidebar on mobile */
+            }
+
+            /* Floating battle bar for mobile */
+            .mobile-battle-bar {
+                display: flex !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                background: rgba(0, 0, 0, 0.95);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                padding: 10px 15px;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+            }
+
+            .mobile-battle-bar .player-compact {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                flex: 1;
+            }
+
+            .mobile-battle-bar .player-compact.you {
+                justify-content: flex-start;
+            }
+
+            .mobile-battle-bar .player-compact.opponent {
+                justify-content: flex-end;
+                flex-direction: row-reverse;
+            }
+
+            .mobile-battle-bar .mini-avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 800;
+                font-size: 14px;
+            }
+
+            .mobile-battle-bar .player-compact.you .mini-avatar {
+                background: var(--primary-color);
+                color: black;
+            }
+
+            .mobile-battle-bar .player-compact.opponent .mini-avatar {
+                background: var(--accent-color);
+                color: white;
+            }
+
+            .mobile-battle-bar .player-stats {
+                display: flex;
+                flex-direction: column;
+                font-size: 11px;
+            }
+
+            .mobile-battle-bar .player-stats .name {
+                font-weight: 600;
+                max-width: 80px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .mobile-battle-bar .player-stats .xp {
+                opacity: 0.7;
+            }
+
+            .mobile-battle-bar .vs-mini {
+                font-weight: 800;
+                font-size: 14px;
+                background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .mobile-battle-bar .progress-mini {
+                width: 50px;
+                height: 4px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 4px;
+                overflow: hidden;
+            }
+
+            .mobile-battle-bar .player-compact.you .progress-mini .fill {
+                background: var(--primary-color);
+            }
+
+            .mobile-battle-bar .player-compact.opponent .progress-mini .fill {
+                background: var(--accent-color);
+            }
+
+            .mobile-battle-bar .fill {
+                height: 100%;
+                transition: width 0.3s;
+            }
+
+            /* Chat takes full width but with top padding for bar */
+            .chat-side {
+                padding-top: 60px;
+            }
+
+            .chat-side .chat-container {
+                height: calc(100vh - 60px);
+            }
+        }
+
+        /* Desktop: Hide mobile bar */
+        @media (min-width: 901px) {
+            .mobile-battle-bar {
+                display: none !important;
+            }
+        }
+
+        /* Winner overlay */
+        .winner-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .winner-overlay.show {
+            display: flex;
+        }
+
+        .winner-overlay .trophy {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .winner-overlay h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .winner-overlay p {
+            opacity: 0.7;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="particles-bg"></canvas>
+
+    <!-- Mobile Battle Bar -->
+    <div class="mobile-battle-bar">
+        <div class="player-compact you">
+            <div class="mini-avatar" id="m-p1-avatar">?</div>
+            <div class="player-stats">
+                <div class="name" id="m-p1-name">You</div>
+                <div class="xp" id="m-p1-xp">0/250</div>
+            </div>
+            <div class="progress-mini">
+                <div class="fill" id="m-p1-bar" style="width: 0%"></div>
+            </div>
+        </div>
+        <div class="vs-mini">VS</div>
+        <div class="player-compact opponent">
+            <div class="mini-avatar" id="m-p2-avatar">?</div>
+            <div class="player-stats">
+                <div class="name" id="m-p2-name">Opponent</div>
+                <div class="xp" id="m-p2-xp">0/250</div>
+            </div>
+            <div class="progress-mini">
+                <div class="fill" id="m-p2-bar" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="battle-chat-container">
+        <!-- Left: Battle Progress Sidebar (Desktop) -->
+        <div class="battle-sidebar">
+            <h2>⚔️ BATTLE ARENA</h2>
+
+            <div class="room-code-display">
+                Room: <span id="sidebar-room-code">---</span>
+            </div>
+
+            <div class="battle-status" id="sidebar-status">
+                CONNECTING...
+            </div>
+
+            <!-- You -->
+            <div class="player-mini-card you">
+                <div class="player-mini-header">
+                    <div class="player-mini-avatar" id="s-p1-avatar">?</div>
+                    <div class="player-mini-info">
+                        <h3 id="s-p1-name">You</h3>
+                        <div class="level" id="s-p1-level">Level --</div>
+                    </div>
+                </div>
+                <div class="player-xp-bar">
+                    <div class="player-xp-fill" id="s-p1-bar" style="width: 0%"></div>
+                </div>
+                <div class="player-xp-text">
+                    <span>XP Progress</span>
+                    <span id="s-p1-xp">0/250</span>
+                </div>
+            </div>
+
+            <div class="vs-divider">VS</div>
+
+            <!-- Opponent -->
+            <div class="player-mini-card opponent">
+                <div class="player-mini-header">
+                    <div class="player-mini-avatar" id="s-p2-avatar">?</div>
+                    <div class="player-mini-info">
+                        <h3 id="s-p2-name">Waiting...</h3>
+                        <div class="level" id="s-p2-level">Level --</div>
+                    </div>
+                </div>
+                <div class="player-xp-bar">
+                    <div class="player-xp-fill" id="s-p2-bar" style="width: 0%"></div>
+                </div>
+                <div class="player-xp-text">
+                    <span>XP Progress</span>
+                    <span id="s-p2-xp">0/250</span>
+                </div>
+            </div>
+
+            <div class="back-to-arena-btn">
+                <a href="battle.html" class="btn">← Back to Arena</a>
+            </div>
+        </div>
+
+        <!-- Right: Chat -->
+        <div class="chat-side">
+            <div class="glass-panel chat-container">
+                <!-- Header -->
+                <div class="chat-header">
+                    <div class="header-title">
+                        <h1>⭐ Battle Chat</h1>
+                        <div class="header-stats">
+                            <span>Lvl <strong id="level">1</strong></span>
+                            <span>XP <strong id="xp">0/250</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div class="chat-area" id="chat">
+                    <div class="message ai">
+                        <div class="message-bubble">
+                            You're in a battle! Chat with me to earn XP and defeat your opponent. First to 250 XP wins!
+                            🏆
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-area">
+                    <div class="input-wrapper">
+                        <input id="message-input" placeholder="Chat to earn XP..." autocomplete="off">
+                    </div>
+                    <button id="sendBtn" class="send-btn" title="Send Message">
+                        ➤
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Winner Overlay -->
+    <div class="winner-overlay" id="winner-overlay">
+        <div class="trophy" id="winner-emoji">🏆</div>
+        <h1 id="winner-title">VICTORY!</h1>
+        <p id="winner-text">You reached 250 XP first!</p>
+        <a href="battle.html" class="btn btn-primary">Back to Arena</a>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script src="battle-chat.js"></script>
+</body>
+
+</html>
