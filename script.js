@@ -1,6 +1,14 @@
 // script.js - Chat Interface Logic (Client-Side Persistence)
 
 document.addEventListener('DOMContentLoaded', () => {
+    // 🛡️ AUTH CHECK
+    const playerId = localStorage.getItem('playerId');
+    if (!playerId && !window.location.pathname.includes('signup.html') && !window.location.pathname.includes('login.html')) {
+        console.log("No profile detected. Redirecting to signup...");
+        window.location.href = 'signup.html';
+        return;
+    }
+
     const chat = document.getElementById("chat");
     const input = document.getElementById("message-input");
     const sendBtn = document.getElementById("sendBtn");
@@ -9,10 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const elXp = document.getElementById('xp');
     const elFocus = document.getElementById('focus');
 
-    input.focus();
+    if (input) input.focus();
 
-    sendBtn.addEventListener('click', sendMessage);
-    input.addEventListener('keydown', (e) => {
+    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+    if (input) input.addEventListener('keydown', (e) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
@@ -20,6 +28,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     handleInitialLoad();
+
+    // 🔄 STATE SYNC HELPER
+    async function syncGameState(state) {
+        const pid = localStorage.getItem('playerId');
+        if (!pid || !state) return;
+
+        try {
+            await fetch('/auth/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ playerId: pid, gameState: state })
+            });
+        } catch (e) {
+            console.warn("Sync failed:", e);
+        }
+    }
 
     // Expose helper to get ANY current state for other scripts
     window.getGameState = () => {
@@ -30,25 +54,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // Expose fetcher for UI updates
     window.fetchGameStatus = handleInitialLoad;
 
-    async function handleInitialLoad() {
-        const navEntry = performance.getEntriesByType("navigation")[0];
-        let savedState = localStorage.getItem('gameState');
+    // ... (Mobile Navigation Logic same) ...
+    const navLogout = document.getElementById('nav-logout');
+    if (navLogout) {
+        navLogout.addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        });
+    }
 
-        // Check reset
-        if (navEntry && navEntry.type === 'reload') {
-            // Optional: You can choose to NOT reset on reload now since we want persistence.
-            // But if user wants a "reset", they should use a button.
-            // For now, let's KEEP persistence even on reload, as that's the Vercel fix.
-            console.log("➡️ Reload detected: Keeping saved state.");
-        }
+    async function handleInitialLoad() {
+        let savedState = localStorage.getItem('gameState');
 
         if (savedState) {
             const parsed = JSON.parse(savedState);
+
+            // FIX: Cap level at 100
+            if (parsed.player && parsed.player.level > 100) {
+                parsed.player.level = 100;
+                localStorage.setItem('gameState', JSON.stringify(parsed));
+                savedState = JSON.stringify(parsed);
+            }
+
             updateStatsDisplay(parsed.player);
             return;
         }
 
-        // checking for default
+        // checking for default (This shouldn't really happen now with signup)
         try {
             const res = await fetch('/game-status');
             const data = await res.json();
@@ -98,8 +130,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Update & SAVE new state
             if (data.gameState) {
+                const oldLevel = JSON.parse(currentState).player?.level || 1;
+                const newLevel = data.gameState.player.level;
+
                 localStorage.setItem('gameState', JSON.stringify(data.gameState));
                 updateStatsDisplay(data.gameState.player);
+
+                // 🔄 Sync to server if logged in
+                syncGameState(data.gameState);
+
+                // Check for Level Up
+                if (newLevel > oldLevel) {
+                    showLevelUpModal(newLevel);
+                }
             }
 
         } catch (e) {
@@ -171,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateStatsDisplay(player) {
         if (elLevel) elLevel.textContent = player.level;
-        if (elXp) elXp.textContent = `${player.xp}/100`;
+        if (elXp) elXp.textContent = `${player.xp}/250`;
         if (elFocus) elFocus.textContent = player.stats.focus;
         updateSidebar(player);
     }
@@ -217,5 +260,131 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `).join('');
         }
+    }
+
+    // --- Visual Overhaul Logic (Dynamic Greeting & Particles) ---
+
+    function updateGreeting() {
+        const hour = new Date().getHours();
+        let greeting = "Greetings, Traveler";
+        if (hour >= 5 && hour < 12) greeting = "Good Morning, Legend";
+        else if (hour >= 12 && hour < 18) greeting = "Good Afternoon, Adventurer";
+        else if (hour >= 18 && hour < 22) greeting = "Good Evening, Explorer";
+        else greeting = "Late Night Creativity?";
+
+        const bubbles = document.querySelectorAll('.ai .message-bubble');
+        if (bubbles.length > 0) {
+            const firstBubble = bubbles[0];
+            // Only update if it contains the default text
+            if (firstBubble.textContent.includes("Greetings, Traveler")) {
+                firstBubble.innerHTML = `${greeting}! I am your AI Guide. Speak with me to earn XP, level up, and unlock your true potential. 🌌`;
+            }
+        }
+    }
+    updateGreeting();
+
+    const canvas = document.getElementById('particles-bg');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let particlesArray;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() * 0.2) - 0.1;
+                this.speedY = (Math.random() * 0.2) - 0.1;
+                this.color = `rgba(255, 255, 255, ${Math.random() * 0.3})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width || this.x < 0) this.speedX = -this.speedX;
+                if (this.y > canvas.height || this.y < 0) this.speedY = -this.speedY;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            for (let i = 0; i < 100; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+    }
+
+    // --- Level Up Modal Logic ---
+    const modal = document.getElementById('level-up-modal');
+    const claimBtn = document.getElementById('claim-level-btn');
+    const newLevelVal = document.getElementById('new-level-val');
+
+    function showLevelUpModal(level) {
+        if (modal && newLevelVal) {
+            newLevelVal.textContent = level;
+            modal.classList.remove('hidden');
+            triggerConfetti(); // Optional: Add a simple confetti function if desired or just rely on CSS animations
+        }
+    }
+
+    if (claimBtn) {
+        claimBtn.addEventListener('click', () => {
+            if (modal) modal.classList.add('hidden');
+        });
+    }
+
+    function triggerConfetti() {
+        // Placeholder for confetti logic (can be expanded later)
+        console.log("🎉 Confetti Triggered!");
+    }
+
+    // --- Welcome / Tutorial Modal Logic ---
+    const welcomeModal = document.getElementById('welcome-modal');
+    const startJourneyBtn = document.getElementById('start-journey-btn');
+
+    if (welcomeModal && startJourneyBtn) {
+        // Check local storage for flag
+        const hasSeenTutorial = localStorage.getItem('has_seen_tutorial');
+
+        if (!hasSeenTutorial) {
+            // Show modal if not seen
+            welcomeModal.classList.remove('hidden');
+        }
+
+        startJourneyBtn.addEventListener('click', () => {
+            // Hide modal and save flag
+            welcomeModal.classList.add('hidden');
+            localStorage.setItem('has_seen_tutorial', 'true');
+
+            // Focus input to encourage instant interaction
+            const input = document.getElementById("message-input");
+            if (input) input.focus();
+        });
     }
 });

@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1v1 Battle | RPG AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- SSE-based arena: No external libraries needed! -->
+    <style>
+        .battle-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 40px;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .vs-badge {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 0, 153, 0.3);
+        }
+
+        .player-card {
+            padding: 40px;
+            text-align: center;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+        }
+
+        .player-card.leading {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 40px rgba(0, 210, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .xp-display {
+            font-size: 64px;
+            font-weight: 800;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+
+        .battle-lobby {
+            max-width: 500px;
+            margin: 100px auto;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .room-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: var(--radius-md);
+            color: white;
+            font-size: 18px;
+            margin: 20px 0;
+            text-align: center;
+            outline: none;
+        }
+
+        .room-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .battle-ui {
+            display: none;
+        }
+
+        .status-msg {
+            margin-top: 20px;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        .leave-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .leader-badge {
+            display: inline-block;
+            background: var(--primary-color);
+            color: black;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 12px;
+            margin-bottom: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .leading .leader-badge {
+            opacity: 1;
+        }
+
+        /* ============================================
+           MOBILE RESPONSIVE STYLES
+           ============================================ */
+
+        @media (max-width: 768px) {
+
+            /* Lobby adjustments */
+            .battle-lobby {
+                margin: 20px auto !important;
+                padding: 20px !important;
+                max-width: 95% !important;
+            }
+
+            .battle-lobby h1 {
+                font-size: 24px !important;
+            }
+
+            /* Stack lobby options vertically on mobile */
+            #lobbyOptions {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+            }
+
+            /* Leave button - smaller on mobile */
+            .leave-btn {
+                position: static !important;
+                display: block;
+                margin: 10px auto 0;
+                font-size: 12px !important;
+                padding: 8px 15px !important;
+            }
+
+            .leave-btn span {
+                font-size: 12px !important;
+            }
+
+            /* Battle arena adjustments */
+            .battle-grid {
+                grid-template-columns: 1fr !important;
+                gap: 15px !important;
+                margin-top: 20px !important;
+            }
+
+            /* VS badge between cards */
+            .vs-badge {
+                font-size: 28px !important;
+                padding: 5px 0;
+            }
+
+            /* Player cards - more compact */
+            .player-card {
+                padding: 20px 15px !important;
+            }
+
+            .player-card .profile-avatar {
+                width: 60px !important;
+                height: 60px !important;
+                font-size: 24px !important;
+                margin-bottom: 10px !important;
+            }
+
+            .player-card h3 {
+                font-size: 18px !important;
+            }
+
+            .player-card #p1Level,
+            .player-card #p2Level {
+                font-size: 13px !important;
+                margin-bottom: 10px !important;
+            }
+
+            /* Total XP display - smaller */
+            .player-card div[style*="font-size: 32px"] {
+                font-size: 24px !important;
+            }
+
+            #p1TotalXp,
+            #p2TotalXp {
+                font-size: 24px !important;
+            }
+
+            /* Bottom action area */
+            #battleArena>div:last-of-type {
+                margin-top: 30px !important;
+            }
+
+            #battleArena>div:last-of-type p {
+                font-size: 13px !important;
+                padding: 0 10px;
+            }
+
+            /* Action buttons - stack vertically */
+            #battleArena>div:last-of-type>div {
+                flex-direction: column !important;
+                gap: 10px !important;
+            }
+
+            #battleArena>div:last-of-type .btn {
+                width: 100%;
+                max-width: 250px;
+                padding: 12px 20px !important;
+            }
+
+            /* Room code display */
+            #displayRoomId {
+                font-size: 16px !important;
+            }
+
+            /* Status message */
+            #battleStatus {
+                font-size: 14px !important;
+            }
+
+            /* Copy invite button */
+            #copyInviteBtn {
+                font-size: 11px !important;
+            }
+
+            /* Public lobby list items */
+            #lobbyList .glass-panel {
+                flex-direction: column !important;
+                gap: 10px !important;
+                text-align: center !important;
+            }
+
+            #lobbyList .glass-panel>div {
+                text-align: center !important;
+            }
+        }
+
+        /* Extra small screens (< 400px) */
+        @media (max-width: 400px) {
+            .battle-lobby {
+                padding: 15px !important;
+            }
+
+            .battle-lobby h1 {
+                font-size: 20px !important;
+            }
+
+            .player-card {
+                padding: 15px 10px !important;
+            }
+
+            .player-card .profile-avatar {
+                width: 50px !important;
+                height: 50px !important;
+                font-size: 20px !important;
+            }
+
+            #p1TotalXp,
+            #p2TotalXp {
+                font-size: 20px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="particles-bg"></div>
+
+    <div class="container" style="position: relative; min-height: 100vh;">
+        <a href="dashboard.html" class="btn leave-btn">
+            <span>← Back to Dashboard</span>
+        </a>
+
+        <!-- Lobby UI -->
+        <div id="lobby" class="glass-panel battle-lobby">
+            <h1 style="font-size: 32px; margin-bottom: 10px;">1v1 Battle Arena</h1>
+            <p style="opacity: 0.7; margin-bottom: 30px;">Compete for the most XP earned in a session</p>
+
+            <div id="lobbyOptions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="glass-panel"
+                    style="padding: 20px; background: rgba(0, 210, 255, 0.05); border-color: var(--primary-color);">
+                    <h3 style="margin-bottom: 10px; color: var(--primary-color);">Host Public Arena</h3>
+                    <p style="font-size: 13px; opacity: 0.6; margin-bottom: 20px;">Your room will appear in the lobby
+                        for others to join.</p>
+                    <button id="createRoomBtn" class="btn btn-primary" style="width: 100%; justify-content: center;">
+                        <span>CREATE PUBLIC ROOM</span>
+                    </button>
+                </div>
+
+                <div class="glass-panel" style="padding: 20px; background: rgba(255,255,255,0.03);">
+                    <h3 style="margin-bottom: 10px;">Private Room</h3>
+                    <p style="font-size: 13px; opacity: 0.6; margin-bottom: 10px;">Enter an invite code directly.</p>
+                    <input type="text" id="roomIdInput" class="room-input" placeholder="ROOM CODE" maxlength="8"
+                        style="margin: 10px 0; padding: 10px; font-size: 16px;">
+                    <button id="joinBtn" class="btn" style="width: 100%; justify-content: center;">
+                        <span>JOIN PRIVATE</span>
+                    </button>
+                    <button id="resetAppBtn"
+                        style="margin-top: 15px; font-size: 10px; opacity: 0.4; background: none; border: none; color: white; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        ⚠️ STUCK? RESET PLAYER PROFILE
+                    </button>
+                </div>
+            </div>
+
+            <!-- Public Lobby List -->
+            <div id="publicLobby" style="margin-top: 40px; text-align: left;">
+                <h3 style="font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <span
+                        style="display: inline-block; width: 8px; height: 8px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00;"></span>
+                    Active Public Arenas
+                </h3>
+                <div id="lobbyList" class="glass-panel"
+                    style="min-height: 100px; padding: 10px; background: rgba(0,0,0,0.2);">
+                    <p id="noRoomsMsg" style="text-align: center; opacity: 0.5; padding: 40px 0;">No public arenas
+                        active. Host one to start!</p>
+                </div>
+            </div>
+
+            <div id="lobbyStatus" class="status-msg"></div>
+        </div>
+
+        <!-- Battle UI -->
+        <div id="battleArena" class="battle-ui">
+            <div style="text-align: center; margin-bottom: 40px; padding-top: 60px;">
+                <div class="glass-panel"
+                    style="display: inline-block; padding: 10px 30px; border-radius: 40px; background: rgba(255,255,255,0.05);">
+                    <h2 style="font-size: 18px; margin: 0; opacity: 0.7;">ARENA <span id="displayRoomId"
+                            style="color: white; opacity: 1; margin-left:10px;">---</span></h2>
+                </div>
+                <p id="battleStatus" style="margin-top: 15px; font-weight: 600; letter-spacing: 1px;">INITIALIZING
+                    SECURE CHANNEL...</p>
+
+                <!-- Invite Section -->
+                <div id="inviteBox" style="margin-top: 20px;">
+                    <button id="copyInviteBtn" class="btn"
+                        style="font-size: 12px; background: rgba(255,255,255,0.05); padding: 5px 15px;">
+                        <span>🔗 COPY INVITE LINK</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="battle-grid">
+                <!-- Player 1 -->
+                <div id="p1Card" class="glass-panel player-card">
+                    <div class="leader-badge"
+                        style="top: -15px; left: 50%; transform: translateX(-50%); position: absolute;">TOP COMPETITOR
+                    </div>
+                    <div id="p1Avatar" class="profile-avatar"
+                        style="margin: 0 auto 20px; width: 80px; height: 80px; font-size: 32px;">?</div>
+                    <h3 id="p1Name" style="font-size: 24px; margin-bottom: 5px;">Player 1</h3>
+                    <div id="p1Level" style="opacity: 0.7; font-weight: bold; font-size: 16px; margin-bottom: 20px;">
+                        LEVEL --</div>
+
+                    <div style="text-align: left; margin-top: 20px;">
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; opacity: 0.8;">
+                            <span>LEVEL PROGRESS</span>
+                            <span id="p1Xp">0/250</span>
+                        </div>
+                        <div class="progress-container"
+                            style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+                            <div id="p1Bar"
+                                style="width: 0%; height: 100%; background: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);">
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; text-align: center;">
+                            <div style="font-size: 11px; opacity: 0.5; letter-spacing: 1px;">TOTAL CAREER XP</div>
+                            <div id="p1TotalXp" style="font-size: 32px; font-weight: 800; color: white;">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="vs-badge">VS</div>
+
+                <!-- Player 2 -->
+                <div id="p2Card" class="glass-panel player-card">
+                    <div class="leader-badge"
+                        style="top: -15px; left: 50%; transform: translateX(-50%); position: absolute;">TOP COMPETITOR
+                    </div>
+                    <div id="p2Avatar" class="profile-avatar"
+                        style="margin: 0 auto 20px; width: 80px; height: 80px; font-size: 32px; background: var(--accent-color);">
+                        ?</div>
+                    <h3 id="p2Name" style="font-size: 24px; margin-bottom: 5px;">Waiting...</h3>
+                    <div id="p2Level" style="opacity: 0.7; font-weight: bold; font-size: 16px; margin-bottom: 20px;">
+                        LEVEL --</div>
+
+                    <div style="text-align: left; margin-top: 20px;">
+                        <div
+                            style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; opacity: 0.8;">
+                            <span>LEVEL PROGRESS</span>
+                            <span id="p2Xp">0/250</span>
+                        </div>
+                        <div class="progress-container"
+                            style="height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+                            <div id="p2Bar"
+                                style="width: 0%; height: 100%; background: var(--accent-color); box-shadow: 0 0 15px var(--accent-color); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);">
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px; text-align: center;">
+                            <div style="font-size: 11px; opacity: 0.5; letter-spacing: 1px;">TOTAL CAREER XP</div>
+                            <div id="p2TotalXp" style="font-size: 32px; font-weight: 800; color: white;">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 60px; text-align: center;">
+                <p style="max-width: 600px; margin: 0 auto; line-height: 1.6; opacity: 0.8;">
+                    <strong>Victory is near!</strong> Go back to the dashboard or chat and earn XP.
+                    This page will update in real-time as you progress.
+                </p>
+                <div style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
+                    <button id="quitBattleBtn" class="btn"
+                        style="background: rgba(255, 50, 100, 0.1); border-color: #ff3366; color: #ff3366;">
+                        <span>QUIT BATTLE</span>
+                    </button>
+                    <a href="index.html" target="_blank" class="btn btn-primary" style="padding: 15px 40px;">
+                        <span>GO EARN XP NOW</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="debugConsole"
+        style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.9); color: #00ff00; font-family: monospace; font-size: 10px; padding: 10px; max-height: 100px; overflow-y: auto; border-top: 1px solid #333; z-index: 10000; display: none;">
+        <div
+            style="display: flex; justify-content: space-between; margin-bottom: 5px; border-bottom: 1px solid #333; padding-bottom: 5px;">
+            <span>DIAGNOSTIC CONSOLE</span>
+            <button onclick="document.getElementById('debugConsole').style.display='none'"
+                style="background: none; border: 1px solid #444; color: #888; cursor: pointer;">HIDE</button>
+        </div>
+        <div id="debugLogs"></div>
+    </div>
+
+    <script src="battle.js"></script>
+</body>
+
+</html>

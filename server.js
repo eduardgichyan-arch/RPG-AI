@@ -5,6 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
+import fs from "fs";
 
 dotenv.config();
 
@@ -14,7 +15,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+// Use process.cwd() for Vercel static file serving
+app.use(express.static(process.cwd()));
 
 // Explicitly serve index.html for root (fixes Vercel "Cannot GET /")
 app.get("/", (req, res) => {
@@ -24,11 +26,101 @@ app.get("/", (req, res) => {
 const API_KEY = process.env.API_KEY || "";
 const PORT = process.env.PORT || 3000;
 
+// In-memory registry for 1v1 battle rooms (Public Lobby)
+let activeBattleRooms = {};
+const BATTLE_ROOM_TIMEOUT = 15000; // 15 seconds for heartbeat
+
 if (!API_KEY) console.warn("⚠️  WARNING: API_KEY environment variable not set!");
+
+// ============================================================================
+// DATABASE (Local JSON)
+// ============================================================================
+const USERS_FILE = path.join(process.cwd(), "users.json");
+let users = {};
+
+function loadUsers() {
+  try {
+    if (fs.existsSync(USERS_FILE)) {
+      users = JSON.parse(fs.readFileSync(USERS_FILE, "utf-8"));
+    }
+  } catch (err) {
+    console.error("Error loading users:", err);
+    users = {};
+  }
+}
+
+function saveUsers() {
+  try {
+    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+  } catch (err) {
+    console.error("Error saving users:", err);
+  }
+}
+
+loadUsers();
+
+function generateUniqueId() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
+  let id = "";
+  for (let i = 0; i < 2; i++) id += letters.charAt(Math.floor(Math.random() * letters.length));
+  for (let i = 0; i < 6; i++) id += numbers.charAt(Math.floor(Math.random() * numbers.length));
+
+  // Ensure uniqueness
+  if (users[id]) return generateUniqueId();
+  return id;
+}
 
 // ============================================================================
 // GAME LOGIC & TEMPLATES
 // ============================================================================
+
+const battleRooms = {};
+
+// --- AUTH ENDPOINTS ---
+app.post("/auth/signup", (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) return res.status(400).json({ error: "Username and password required" });
+
+  // Check if username exists (case insensitive check usually better but let's keep it simple)
+  const existing = Object.values(users).find(u => u.username.toLowerCase() === username.toLowerCase());
+  if (existing) return res.status(400).json({ error: "Username already taken" });
+
+  const playerId = generateUniqueId();
+  const newUser = {
+    playerId,
+    username,
+    password, // In a real app, use bcrypt handles hashing!
+    gameState: JSON.parse(JSON.stringify(defaultGameState))
+  };
+
+  newUser.gameState.player.name = username;
+  newUser.gameState.player.playerId = playerId;
+
+  users[playerId] = newUser;
+  saveUsers();
+
+  res.json({ success: true, playerId, gameState: newUser.gameState });
+});
+
+app.post("/auth/login", (req, res) => {
+  const { username, password } = req.body;
+  const user = Object.values(users).find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+
+  if (!user) return res.status(401).json({ error: "Invalid username or password" });
+
+  res.json({ success: true, playerId: user.playerId, gameState: user.gameState });
+});
+
+// Update game state for a user
+app.post("/auth/sync", (req, res) => {
+  const { playerId, gameState } = req.body;
+  if (!users[playerId]) return res.status(404).json({ error: "User not found" });
+
+  users[playerId].gameState = gameState;
+  saveUsers();
+  res.json({ success: true });
+});
 
 const defaultGameState = {
   player: {
@@ -38,7 +130,7 @@ const defaultGameState = {
     totalXpEarned: 0,
     title: "Curious Beginner",
     titleLevel: 1,
-    stats: { health: 100, energy: 100, focus: 50, discipline: 50, productivity: 50, consistency: 50 },
+    stats: { health: 100, energy: 100, focus: 50, discipline: 50, productivity: 50, consistency: 50, creativity: 50, kindness: 50, awareness: 50 },
     streak: 0,
     longestStreak: 0,
     currentDay: new Date().getDate(),
@@ -66,12 +158,12 @@ const defaultGameState = {
 };
 
 const achievementTitles = [
-  { level: 1, name: "Curious Beginner", icon: "🌱", minXp: 0, maxXp: 99, description: "Your journey begins with the first question" },
-  { level: 2, name: "Thoughtful Learner", icon: "📚", minXp: 100, maxXp: 499, description: "Every conversation deepens your understanding" },
-  { level: 3, name: "Insightful Mind", icon: "💭", minXp: 500, maxXp: 1499, description: "Your questions reveal layers of meaning" },
-  { level: 4, name: "Philosopher", icon: "🧠", minXp: 1500, maxXp: 4999, description: "Wisdom flows through your words" },
-  { level: 5, name: "Master of Discourse", icon: "👑", minXp: 5000, maxXp: 9999, description: "Your insights illuminate the path for others" },
-  { level: 6, name: "Legendary Scholar", icon: "⭐", minXp: 10000, maxXp: Infinity, description: "A seeker of infinite knowledge and understanding" }
+  { level: 1, name: "Curious Beginner", icon: "🌱", minXp: 0, maxXp: 249, description: "Your journey begins with the first question" },
+  { level: 2, name: "Thoughtful Learner", icon: "📚", minXp: 250, maxXp: 749, description: "Every conversation deepens your understanding" },
+  { level: 3, name: "Insightful Mind", icon: "💭", minXp: 750, maxXp: 1499, description: "Your questions reveal layers of meaning" },
+  { level: 4, name: "Philosopher", icon: "🧠", minXp: 1500, maxXp: 2999, description: "Wisdom flows through your words" },
+  { level: 5, name: "Master of Discourse", icon: "👑", minXp: 3000, maxXp: 7499, description: "Your insights illuminate the path for others" },
+  { level: 6, name: "Legendary Scholar", icon: "⭐", minXp: 7500, maxXp: Infinity, description: "A seeker of infinite knowledge and understanding" }
 ];
 
 const badgeDefinitions = {
@@ -100,7 +192,10 @@ const dailyQuestTemplates = [
   { title: "Send 5 messages in one day", target: 5, type: "volume", xp: 75 },
   { title: "Ask a philosophical question", target: 1, type: "philosophical", xp: 35 },
   { title: "Build a 3-message conversation", target: 3, type: "streak", xp: 55 },
-  { title: "Reach 500+ character question", target: 1, type: "long-message", xp: 50 }
+  { title: "Reach 500+ character question", target: 1, type: "long-message", xp: 50 },
+  { title: "Ask 3 questions", target: 3, type: "questions", xp: 40 },
+  { title: "Earn 250 XP today", target: 250, type: "xp-gain", xp: 75 },
+  { title: "Short & Sweet (< 20 chars)", target: 1, type: "short-message", xp: 30 }
 ];
 
 const weeklyQuestTemplates = [
@@ -165,12 +260,14 @@ function checkBadges(gameState) {
 
 function generateDailyQuests(gameState) {
   const today = new Date().toDateString();
-  if (today !== gameState.lastQuestGenerationDay) {
+  if (today !== gameState.lastQuestGenerationDay || gameState.dailyQuests.length === 0) {
     gameState.dailyQuests = [];
     gameState.lastQuestGenerationDay = today;
     const shuffled = dailyQuestTemplates.sort(() => Math.random() - 0.5);
-    for (let i = 0; i < 3; i++) {
-      gameState.dailyQuests.push({ ...shuffled[i], id: i, progress: 0, completed: false });
+    for (let i = 0; i < 7; i++) {
+      if (shuffled[i]) {
+        gameState.dailyQuests.push({ ...shuffled[i], id: i, progress: 0, completed: false });
+      }
     }
   }
   return gameState.dailyQuests;
@@ -212,6 +309,9 @@ function updateQuestProgress(gameState, message, xp) {
       else if (quest.type === "philosophical" && hasQuestion && messageLength > 100) quest.progress += 1;
       else if (quest.type === "streak") quest.progress += 1;
       else if (quest.type === "long-message" && messageLength >= 500) quest.progress += 1;
+      else if (quest.type === "questions" && hasQuestion) quest.progress += 1;
+      else if (quest.type === "xp-gain") quest.progress += xp;
+      else if (quest.type === "short-message" && messageLength < 20 && messageLength > 0) quest.progress += 1;
 
       if (quest.progress >= quest.target) {
         quest.completed = true;
@@ -268,20 +368,75 @@ function awardXP(gameState, message) {
 
   if (!valid) return { xp: 0, multiplier: 1, baseXp: 0, streak: gameState.player.streak, newBadges: [], titleInfo: null };
 
+  // Spam Check
+  if (gameState.player.lastMessageContent === trimmed) {
+    return { xp: 0, multiplier: 1, baseXp: 0, streak: gameState.player.streak, newBadges: [], titleInfo: null, message: "Repeated Message" };
+  }
+
   updateHealth(gameState);
   const multiplier = getStreakMultiplier(gameState);
 
   let baseXp = message.length > 50 ? 20 : 10;
+  if (message.length > 150) baseXp = 50;
   if (message.includes('?')) baseXp += 5;
 
+  // Smart Keyword Bonus
+  const smartKeywords = ["analyze", "theory", "concept", "explain", "difference", "impact", "relationship", "cause", "prove", "perspective", "why", "how"];
+  if (smartKeywords.some(keyword => trimmed.includes(keyword))) {
+    baseXp += 20;
+  }
+
+  // Stat Updates
+  if (!gameState.player.stats.creativity) gameState.player.stats.creativity = 50;
+  if (!gameState.player.stats.kindness) gameState.player.stats.kindness = 50;
+  if (!gameState.player.stats.awareness) gameState.player.stats.awareness = 50;
+
+  // Energy Cost
+  gameState.player.stats.energy = Math.max(0, gameState.player.stats.energy - 2);
+
+  // Focus Gain
+  gameState.player.stats.focus = Math.min(100, gameState.player.stats.focus + (message.length > 50 ? 5 : 2));
+
+  // Health Regen (small)
+  gameState.player.stats.health = Math.min(100, gameState.player.stats.health + 1);
+
+  // Creativity & Intelligence (Awareness)
+  if (smartKeywords.some(keyword => trimmed.includes(keyword))) {
+    gameState.player.stats.creativity = Math.min(100, gameState.player.stats.creativity + 2);
+    gameState.player.stats.awareness = Math.min(100, gameState.player.stats.awareness + 2);
+  }
+
+  // Kindness
+  const kindnessKeywords = ["please", "thank", "thanks", "appreciate", "helpful", "good", "love", "great", "kind", "sorry"];
+  if (kindnessKeywords.some(keyword => trimmed.includes(keyword))) {
+    gameState.player.stats.kindness = Math.min(100, gameState.player.stats.kindness + 2);
+  }
+
+  // Calculate XP
   let xp = Math.floor(baseXp * multiplier);
+
+  // Level Cap Logic (Prevent XP gain if maxed)
+  if (gameState.player.level >= 100) {
+    xp = 0;
+  }
+
   gameState.player.xp += xp;
   gameState.player.totalXpEarned += xp;
 
-  if (gameState.player.xp >= 100) {
-    gameState.player.level += Math.floor(gameState.player.xp / 100);
-    gameState.player.xp %= 100;
+  // Check for Level Up (Threshold: 250 XP)
+  if (gameState.player.xp >= 250) {
+    gameState.player.level += Math.floor(gameState.player.xp / 250);
+    gameState.player.xp %= 250;
   }
+
+  // Cap at 100
+  if (gameState.player.level >= 100) {
+    gameState.player.level = 100;
+    if (gameState.player.xp > 0) gameState.player.xp = 0;
+  }
+
+  // Update last message content for spam check
+  gameState.player.lastMessageContent = trimmed;
 
   updateStatistics(gameState, message, xp);
   updateQuestProgress(gameState, message, xp);
@@ -297,6 +452,12 @@ function resolveGameState(req) {
   if (!state || !state.player) {
     state = JSON.parse(JSON.stringify(defaultGameState));
   }
+
+  // Retroactive Fix: Clamp Level
+  if (state.player && state.player.level > 100) {
+    state.player.level = 100;
+  }
+
   return state;
 }
 
@@ -318,7 +479,13 @@ app.post("/chat", async (req, res) => {
     const url = `https://api.groq.com/openai/v1/chat/completions`;
     const payload = {
       model: "llama-3.3-70b-versatile",
-      messages: [{ role: "system", content: "You are a RPG guide." }, { role: "user", content: message }],
+      messages: [
+        {
+          role: "system",
+          content: "You are a RPG guide in a cosmic world. IMPORTANT: Never provide answers to game riddles, puzzles, or events that the user might encounter in the Dashboard. If a user asks for a riddle answer, politely refuse and encourage them to solve it on their own to earn their XP. Keep your responses concise and short."
+        },
+        { role: "user", content: message }
+      ],
       max_tokens: 1000
     };
 
@@ -417,8 +584,222 @@ app.post("/init-profile", (req, res) => {
 app.get("/game-status", (req, res) => res.json(defaultGameState));
 app.post("/game-reset", (req, res) => res.json(defaultGameState));
 
+// ============================================================================
+// SSE-BASED ARENA SYSTEM (Simple & Reliable)
+// ============================================================================
+
+// In-memory arena rooms
+const arenaRooms = {};
+
+// Generate a simple room code
+function generateRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+// Create a new arena room
+app.post("/arena/create", (req, res) => {
+  const { playerId, playerName, playerLevel } = req.body;
+  if (!playerId) return res.status(400).json({ error: "Missing playerId" });
+
+  // Remove any existing room by this player
+  Object.keys(arenaRooms).forEach(code => {
+    if (arenaRooms[code].host.id === playerId) {
+      delete arenaRooms[code];
+    }
+  });
+
+  const code = generateRoomCode();
+  arenaRooms[code] = {
+    code,
+    host: { id: playerId, name: playerName || "Host", level: playerLevel || 1, xp: 0, totalXp: 0 },
+    guest: null,
+    connections: [],  // SSE connections
+    winner: null,
+    createdAt: Date.now()
+  };
+
+  console.log(`[ARENA] Room ${code} created by ${playerName}`);
+  res.json({ success: true, code });
+});
+
+// Join an existing room
+app.post("/arena/join/:code", (req, res) => {
+  const { code } = req.params;
+  const { playerId, playerName, playerLevel } = req.body;
+
+  const room = arenaRooms[code.toUpperCase()];
+  if (!room) return res.status(404).json({ error: "Room not found" });
+  if (room.guest) return res.status(400).json({ error: "Room is full" });
+  if (room.host.id === playerId) return res.status(400).json({ error: "Cannot join your own room" });
+
+  room.guest = { id: playerId, name: playerName || "Guest", level: playerLevel || 1, xp: 0, totalXp: 0 };
+
+  // Notify host that someone joined
+  broadcastToRoom(code, { type: 'player_joined', player: room.guest });
+
+  console.log(`[ARENA] ${playerName} joined room ${code}`);
+  res.json({ success: true, host: room.host });
+});
+
+// SSE stream endpoint - clients listen here for updates
+app.get("/arena/stream/:code", (req, res) => {
+  const { code } = req.params;
+  const room = arenaRooms[code.toUpperCase()];
+
+  if (!room) {
+    return res.status(404).json({ error: "Room not found" });
+  }
+
+  // Set SSE headers
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  res.flushHeaders();
+
+  // Send initial state
+  res.write(`data: ${JSON.stringify({ type: 'connected', room: { host: room.host, guest: room.guest } })}\n\n`);
+
+  // Add this connection to the room
+  room.connections.push(res);
+  console.log(`[ARENA] SSE connection opened for room ${code}. Total: ${room.connections.length}`);
+
+  // Handle client disconnect
+  req.on('close', () => {
+    room.connections = room.connections.filter(c => c !== res);
+    console.log(`[ARENA] SSE connection closed for room ${code}. Remaining: ${room.connections.length}`);
+  });
+});
+
+// Update XP for a player
+app.post("/arena/update/:code", (req, res) => {
+  const { code } = req.params;
+  const { playerId, xp, totalXp } = req.body;
+
+  const room = arenaRooms[code.toUpperCase()];
+  if (!room) return res.status(404).json({ error: "Room not found" });
+
+  // Determine which player this is
+  let player = null;
+  let role = null;
+  if (room.host.id === playerId) {
+    player = room.host;
+    role = 'host';
+  } else if (room.guest && room.guest.id === playerId) {
+    player = room.guest;
+    role = 'guest';
+  }
+
+  if (!player) return res.status(400).json({ error: "Player not in this room" });
+
+  // Update XP
+  player.xp = xp;
+  player.totalXp = totalXp;
+
+  // Check for winner (first to 250 XP in this session)
+  if (player.xp >= 250 && !room.winner) {
+    room.winner = player.name;
+    broadcastToRoom(code.toUpperCase(), { type: 'winner', winner: player.name, role });
+  }
+
+  // Broadcast update to all connections
+  broadcastToRoom(code.toUpperCase(), {
+    type: 'xp_update',
+    role,
+    xp: player.xp,
+    totalXp: player.totalXp,
+    name: player.name
+  });
+
+  res.json({ success: true });
+});
+
+// Get room state
+app.get("/arena/state/:code", (req, res) => {
+  const { code } = req.params;
+  const room = arenaRooms[code.toUpperCase()];
+
+  if (!room) return res.status(404).json({ error: "Room not found" });
+
+  res.json({
+    code: room.code,
+    host: room.host,
+    guest: room.guest,
+    winner: room.winner
+  });
+});
+
+// Leave/close room
+app.post("/arena/leave/:code", (req, res) => {
+  const { code } = req.params;
+  const { playerId } = req.body;
+
+  const room = arenaRooms[code.toUpperCase()];
+  if (!room) return res.json({ success: true });
+
+  // Notify others this player left
+  broadcastToRoom(code.toUpperCase(), { type: 'player_left', playerId });
+
+  // If host leaves, close the room
+  if (room.host.id === playerId) {
+    delete arenaRooms[code.toUpperCase()];
+    console.log(`[ARENA] Room ${code} closed (host left)`);
+  } else if (room.guest && room.guest.id === playerId) {
+    room.guest = null;
+    console.log(`[ARENA] Guest left room ${code}`);
+  }
+
+  res.json({ success: true });
+});
+
+// Get list of public rooms (for lobby display)
+app.get("/arena/lobby", (req, res) => {
+  const now = Date.now();
+  const publicRooms = Object.values(arenaRooms)
+    .filter(room => !room.guest && (now - room.createdAt) < 300000) // Only show rooms without guest, created within 5 minutes
+    .map(room => ({
+      code: room.code,
+      hostName: room.host.name,
+      hostLevel: room.host.level
+    }));
+
+  res.json(publicRooms);
+});
+
+// Helper: Broadcast message to all SSE connections in a room
+function broadcastToRoom(code, data) {
+  const room = arenaRooms[code];
+  if (!room) return;
+
+  const message = `data: ${JSON.stringify(data)}\n\n`;
+  room.connections.forEach(connection => {
+    try {
+      connection.write(message);
+    } catch (e) {
+      console.error('[ARENA] Failed to write to connection:', e.message);
+    }
+  });
+}
+
+// Cleanup old rooms every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  Object.keys(arenaRooms).forEach(code => {
+    if (now - arenaRooms[code].createdAt > 3600000) { // 1 hour
+      delete arenaRooms[code];
+      console.log(`[ARENA] Cleaned up stale room ${code}`);
+    }
+  });
+}, 300000);
+
 export default app;
 
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => console.log(`Server running on ${PORT}`));
 }
+

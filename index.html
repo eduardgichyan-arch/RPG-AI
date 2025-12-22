@@ -12,10 +12,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=3">
 </head>
 
 <body>
+    <canvas id="particles-bg"></canvas>
 
     <div class="container main-layout">
         <!-- Sidebar -->
@@ -94,6 +95,72 @@
                     ➤
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+        <button class="nav-item active" id="nav-chat">
+            <span class="nav-icon">💬</span>
+            <span class="nav-label">Chat</span>
+        </button>
+        <button class="nav-item" id="nav-profile">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Profile</span>
+        </button>
+        <a href="/dashboard.html" class="nav-item">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Dashboard</span>
+        </a>
+        <button class="nav-item" id="nav-logout">
+            <span class="nav-icon">🚪</span>
+            <span class="nav-label">Logout</span>
+        </button>
+    </div>
+
+    <!-- Level Up Modal -->
+    <div id="level-up-modal" class="level-up-modal hidden">
+        <div class="level-up-content">
+            <div class="level-emoji">🎉</div>
+            <h2>Level Up!</h2>
+            <div class="new-level-display">Level <span id="new-level-val">2</span></div>
+            <p>You are growing stronger, Traveler.</p>
+            <button class="btn btn-primary" id="claim-level-btn">Claim Rewards</button>
+        </div>
+    </div>
+
+    <!-- Welcome/Tutorial Modal -->
+    <div id="welcome-modal" class="welcome-modal hidden">
+        <div class="welcome-content">
+            <div class="welcome-icon">🚀</div>
+            <h2>Welcome, Traveler!</h2>
+            <p class="welcome-text">
+                This is <strong>AI Chat RPG</strong>, where your words have power.
+            </p>
+            <ul class="welcome-steps">
+                <li>
+                    <span class="step-icon">💬</span>
+                    <div class="step-info">
+                        <strong>Chat to Earn XP</strong>
+                        <span>Every message helps you grow.</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="step-icon">📊</span>
+                    <div class="step-info">
+                        <strong>Build Your Profile</strong>
+                        <span>Your personality stats change based on <em>how</em> you talk.</span>
+                    </div>
+                </li>
+                <li>
+                    <span class="step-icon">🏆</span>
+                    <div class="step-info">
+                        <strong>Level Up</strong>
+                        <span>Reach Level 100 to become a Cosmic Master.</span>
+                    </div>
+                </li>
+            </ul>
+            <button class="btn btn-primary btn-lg" id="start-journey-btn">Start My Journey ➜</button>
         </div>
     </div>
 
