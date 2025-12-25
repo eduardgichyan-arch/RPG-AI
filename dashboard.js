@@ -395,6 +395,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ playerId, itemId })
             });
+
             const data = await res.json();
 
             if (data.success) {
@@ -406,12 +407,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 alert(data.message);
             } else {
-                if (data.error.includes('not found')) {
+                if (res.status === 404) {
                     alert('Session expired. Please log in again.');
                     localStorage.clear();
                     window.location.href = 'login.html';
                 } else {
-                    alert(data.error);
+                    alert(data.error || 'Equip failed');
                 }
             }
         } catch (e) {
@@ -435,6 +436,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ playerId, itemId })
             });
+
             const data = await res.json();
 
             if (data.success) {
@@ -442,13 +444,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 renderShop(data.gameState);
                 alert(data.message);
             } else {
-                // If user not found, likely auth issue
-                if (data.error.includes('not found')) {
+                // Only redirect on actual authentication failure (404)
+                if (res.status === 404) {
                     alert('Session expired. Please log in again.');
                     localStorage.clear();
                     window.location.href = 'login.html';
                 } else {
-                    alert(data.error);
+                    alert(data.error || 'Purchase failed');
                 }
             }
         } catch (e) {
