@@ -383,7 +383,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     window.equipItem = async function (itemId) {
         const playerId = localStorage.getItem('playerId');
-        if (!playerId) return;
+        if (!playerId) {
+            alert('Please log in first');
+            window.location.href = 'login.html';
+            return;
+        }
 
         try {
             const res = await fetch('/shop/equip', {
@@ -399,21 +403,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // Update Theme & Sidebar immediately
                 if (window.applyTheme) window.applyTheme(data.gameState.player);
-                // Also update stats if needed (usually handled by renderShop refreshing state usage elsewhere)
 
-                // Optional: Show success toast
                 alert(data.message);
             } else {
-                alert(data.error);
+                if (data.error.includes('not found')) {
+                    alert('Session expired. Please log in again.');
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.error);
+                }
             }
         } catch (e) {
-            alert("Equip failed");
+            alert("Equip failed: " + e.message);
         }
     };
 
     window.buyItem = async function (itemId) {
         const playerId = localStorage.getItem('playerId');
-        if (!playerId) return;
+        if (!playerId) {
+            alert('Please log in first');
+            window.location.href = 'login.html';
+            return;
+        }
 
         if (!confirm("Purchase this item?")) return;
 
@@ -430,10 +442,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 renderShop(data.gameState);
                 alert(data.message);
             } else {
-                alert(data.error);
+                // If user not found, likely auth issue
+                if (data.error.includes('not found')) {
+                    alert('Session expired. Please log in again.');
+                    localStorage.clear();
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.error);
+                }
             }
         } catch (e) {
-            alert("Purchase failed");
+            alert("Purchase failed: " + e.message);
         }
     };
 
