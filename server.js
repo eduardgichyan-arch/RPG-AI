@@ -1,13 +1,15 @@
 // server.js
 import express from "express";
-import fetch from "node-fetch";
+// import fetch from "node-fetch"; // Native fetch in Node 18+
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import filter from "./filter.js"; // Import Profanity Filter
 
 dotenv.config();
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,9 +20,9 @@ app.use(express.json());
 // Use process.cwd() for Vercel static file serving
 app.use(express.static(process.cwd()));
 
-// Explicitly serve index.html for root (fixes Vercel "Cannot GET /")
+// Landing page for root
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(__dirname, "landing.html"));
 });
 
 const API_KEY = process.env.API_KEY || "";
@@ -94,6 +96,11 @@ app.post("/auth/signup", (req, res) => {
     gameState: JSON.parse(JSON.stringify(defaultGameState))
   };
 
+  // Set Language if provided, otherwise default to 'en'
+  if (req.body.language) {
+    newUser.gameState.player.language = req.body.language;
+  }
+
   newUser.gameState.player.name = username;
   newUser.gameState.player.playerId = playerId;
 
@@ -148,7 +155,15 @@ const defaultGameState = {
       questsCompleted: 0,
       dailyQuestsCompletedTotal: 0
     },
-    personalityType: "Unknown"
+    personalityType: "Unknown",
+    language: "en", // Default language
+    credits: 50,    // New Currency
+    skillPoints: 0, // New Currency
+    credits: 50,    // New Currency
+    skillPoints: 0, // New Currency
+    inventory: [],  // Owned items
+    equippedTheme: null, // Currently active theme
+    unlockedSkills: [] // Unlocked skill IDs
   },
   dailyQuests: [],
   weeklyQuests: [],
@@ -181,7 +196,16 @@ const badgeDefinitions = {
   "early-bird": { name: "🌅 Early Bird", description: "Send a message between 5AM and 9AM", condition: () => { const h = new Date().getHours(); return h >= 5 && h <= 9; } },
   "weekend-warrior": { name: "⚔️ Weekend Warrior", description: "Active on a weekend", condition: () => { const d = new Date().getDay(); return d === 0 || d === 6; } },
   "social-butterfly": { name: "🦋 Social Butterfly", description: "Send 100 total messages", condition: (p) => p.statistics.totalMessages >= 100 },
-  "deep-thinker": { name: "🤔 Deep Thinker", description: "Average XP per message > 20", condition: (p) => p.statistics.averageXpPerMessage >= 20 }
+  "deep-thinker": { name: "🤔 Deep Thinker", description: "Average XP per message > 20", condition: (p) => p.statistics.averageXpPerMessage >= 20 },
+  // NEW BADGES
+  "curiosity": { name: "🔍 Curiosity", description: "Ask 10 questions", condition: (p) => p.statistics.totalMessages >= 10 },
+  "anomaly-initiate": { name: "🛰️ Anomaly Initiate", description: "Clear your first anomaly", condition: (p) => p.statistics.questsCompleted >= 1 },
+  "anomaly-expert": { name: "🛸 Anomaly Expert", description: "Clear 10 anomalies", condition: (p) => p.statistics.questsCompleted >= 10 },
+  "xp-titan": { name: "💎 XP Titan", description: "Earn 5,000 total XP", condition: (p) => p.totalXpEarned >= 5000 },
+  "focus-master": { name: "🧘 Focus Master", description: "Reach 100% Focus", condition: (p) => p.stats.focus >= 100 },
+  "energy-surge": { name: "⚡ Energy Surge", description: "Reach 100% Energy", condition: (p) => p.stats.energy >= 100 },
+  "dedicated": { name: "📅 Dedicated", description: "Maintain a 3-day streak", condition: (p) => p.streak >= 3 },
+  "level-ten": { name: "🎖️ Decurion", description: "Reach Level 10", condition: (p) => p.level >= 10 }
 };
 
 const dailyQuestTemplates = [
@@ -316,6 +340,7 @@ function updateQuestProgress(gameState, message, xp) {
       if (quest.progress >= quest.target) {
         quest.completed = true;
         gameState.player.statistics.questsCompleted += 1;
+        gameState.player.credits = (gameState.player.credits || 0) + 25; // Reward: 25 Credits per quest
         if (gameState.dailyQuests.every(q => q.completed)) gameState.player.statistics.dailyQuestsCompletedTotal += 1;
       }
     }
@@ -415,6 +440,11 @@ function awardXP(gameState, message) {
   // Calculate XP
   let xp = Math.floor(baseXp * multiplier);
 
+  // Skill: Neural Efficiency (+10% XP)
+  if (gameState.player.unlockedSkills && gameState.player.unlockedSkills.includes('neural_efficiency_1')) {
+    xp = Math.floor(xp * 1.1);
+  }
+
   // Level Cap Logic (Prevent XP gain if maxed)
   if (gameState.player.level >= 100) {
     xp = 0;
@@ -423,10 +453,23 @@ function awardXP(gameState, message) {
   gameState.player.xp += xp;
   gameState.player.totalXpEarned += xp;
 
-  // Check for Level Up (Threshold: 250 XP)
-  if (gameState.player.xp >= 250) {
-    gameState.player.level += Math.floor(gameState.player.xp / 250);
-    gameState.player.xp %= 250;
+  // Check for Level Up (Threshold: 100 XP)
+  if (gameState.player.xp >= 100) {
+    const levelsGained = Math.floor(gameState.player.xp / 100);
+    if (levelsGained > 0) {
+      gameState.player.level += levelsGained;
+      gameState.player.xp %= 100;
+
+      // Grant Skill Points & Credits
+      if (!gameState.player.skillPoints) gameState.player.skillPoints = 0;
+      gameState.player.skillPoints += levelsGained;
+
+      // Grant Credits (50 per level)
+      gameState.player.credits = (gameState.player.credits || 0) + (levelsGained * 50);
+    }
+    // Simple fix: finding how many levels gained
+    // Actually, line 445: gameState.player.level += ... 
+    // We should capture that amount.
   }
 
   // Cap at 100
@@ -465,26 +508,294 @@ function resolveGameState(req) {
 // ENDPOINTS
 // ============================================================================
 
+// Oracle Endpoint (Interactive Hints)
+app.get("/oracle-test", (req, res) => res.json({ status: "ok", message: "Route works" }));
+
+app.post("/oracle", async (req, res) => {
+  const { question, riddle, gameState } = req.body;
+  if (!gameState || !gameState.player) return res.status(400).json({ error: "No game state" });
+  if (gameState.player.xp < 75) return res.status(400).json({ error: "Not enough XP" });
+
+  const url = `https://api.groq.com/openai/v1/chat/completions`;
+  const payload = {
+    model: "llama-3.1-8b-instant",
+    messages: [
+      {
+        role: "system",
+        content: `You are the Oracle of a Sci-Fi RPG. The user is trying to solve this riddle: "${riddle}". 
+        The user asks you: "${question}".
+        
+        Task: Give a helpful, cryptic hint based on their question. 
+        
+        Language: ${gameState.player.language === 'ru' ? 'Russian' : gameState.player.language === 'am' ? 'Armenian' : 'English'}.
+        
+        Rules:
+        1. DO NOT give the direct answer.
+        2. If they ask "Is it X?" and X is correct, say something like "The stars align with your thought..." or "You are very close." but don't just say "Yes".
+        3. Keep it under 20 words.
+        4. Be mystical.`
+      },
+      { role: "user", content: "Oracle, guide me." }
+    ],
+    max_tokens: 100
+  };
+
+  try {
+    const r = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+      body: JSON.stringify(payload)
+    });
+    const d = await r.json();
+    const hint = d.choices?.[0]?.message?.content || "The Oracle is silent.";
+
+    // Deduct XP on success
+    // Note: In a real app we'd save this state here. 
+    // For this architecture, we return the hint and let the client handle the state deduction sync, 
+    // or arguably better, we update state here and return it. Let's return the hint and let client deduct to match existing pattern, 
+    // OR return updated state. The patterns in this app rely on client sending state.
+    // Let's rely on dashboard.js to deduct locally and sync, or we can deduct here if we trust the input state.
+    // Safe Update:
+    gameState.player.xp -= 75;
+
+    res.json({ hint, gameState });
+
+  } catch (e) {
+    res.status(500).json({ error: "Oracle connection failed" });
+  }
+});
+
+// AI Riddle Generation Endpoint
+app.post("/generate-riddles", async (req, res) => {
+  const { language } = req.body; // Client can pass language
+  const lang = language || 'en';
+
+  const langInstruction = {
+    'en': "Generate riddles in English.",
+    'ru': "Generate riddles in Russian (using Cyrillic). Answers must be single Russian words.",
+    'am': "Generate riddles in Armenian (using Armenian script). Answers must be single Armenian words."
+  }[lang];
+
+  const url = `https://api.groq.com/openai/v1/chat/completions`;
+  const payload = {
+    model: "llama-3.1-8b-instant",
+    messages: [
+      {
+        role: "system",
+        content: `You are a riddle generator for a sci-fi RPG. Generate 3 UNIQUE riddles in strict JSON format.
+        
+        LANGUAGE: ${langInstruction}
+
+CRITICAL RULES:
+1. Return ONLY valid JSON array. No markdown, no code blocks, no extra text.
+2. Each riddle must have ONE CLEAR, UNAMBIGUOUS answer
+3. AVOID riddles with multiple possible answers
+4. The answer must be a common word in the target language
+
+Format:
+[
+  {
+    "title": "Cosmic challenge name (in target language)",
+    "npcName": "NPC name (keep English/Sci-Fi names)",
+    "question": "The riddle question (in target language)",
+    "answer": "single word answer (lowercase, in target language)",
+    "hint1": "Vague hint (in target language)",
+    "hint2": "Obvious hint (in target language)",
+    "reward": 150-500,
+    "color": "#hexcolor"
+  }
+]
+
+Requirements:
+- Variety: logic puzzles, wordplay, tech riddles
+- Answers: SINGLE WORD only
+- NPC names: futuristic
+- Colors: vibrant hex codes
+- Focus on classic riddles with universally accepted answers
+
+Generate 3 completely different riddles now.`
+      },
+      { role: "user", content: "Generate riddles" }
+    ],
+    max_tokens: 1200, // Increased for non-Latin scripts
+    temperature: 1.2
+  };
+
+  try {
+    const r = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+      body: JSON.stringify(payload)
+    });
+    const d = await r.json();
+    let content = d.choices?.[0]?.message?.content || "[]";
+
+    // Clean up markdown if AI adds it
+    content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+    const riddles = JSON.parse(content);
+
+    // Add IDs and format for client
+    const formatted = riddles.map((r, i) => ({
+      id: Date.now() + i,
+      title: r.title || "Mystery Challenge",
+      npcName: r.npcName || "Unknown",
+      question: r.question,
+      answers: [r.answer.toLowerCase()],
+      hint: r.hint1 || "Think carefully...",
+      hint2: r.hint2 || "The answer is obvious.",
+      reward: Math.min(500, Math.max(150, r.reward || 300)),
+      color: r.color || "#00d2ff",
+      image: `https://api.dicebear.com/7.x/bottts/svg?seed=${r.npcName || Math.random()}`
+    }));
+
+    res.json({ riddles: formatted });
+  } catch (e) {
+    console.error("Riddle generation failed:", e.message);
+
+    // Fallback to static riddles
+    const fallback = [
+      {
+        id: Date.now(),
+        title: "The Data Stream",
+        npcName: "Cache-7",
+        question: "What has keys but can't open locks?",
+        answers: ["keyboard", "piano"],
+        hint: "You use it to communicate.",
+        hint2: "It's on your device.",
+        reward: 250,
+        color: "#00d2ff",
+        image: "https://api.dicebear.com/7.x/bottts/svg?seed=Cache"
+      },
+      {
+        id: Date.now() + 1,
+        title: "The Echo Chamber",
+        npcName: "Signal-3",
+        question: "I speak without a mouth. What am I?",
+        answers: ["echo"],
+        hint: "You hear me in canyons.",
+        hint2: "I repeat what you say.",
+        reward: 300,
+        color: "#bc13fe",
+        image: "https://api.dicebear.com/7.x/bottts/svg?seed=Signal"
+      },
+      {
+        id: Date.now() + 2,
+        title: "The Void",
+        npcName: "Shadow-X",
+        question: "The more there is, the less you see. What is it?",
+        answers: ["darkness", "dark"],
+        hint: "It comes at night.",
+        hint2: "Turn on lights to remove it.",
+        reward: 200,
+        color: "#9b59b6",
+        image: "https://api.dicebear.com/7.x/bottts/svg?seed=Shadow"
+      }
+    ];
+
+    res.json({ riddles: fallback });
+  }
+});
+
 app.post("/chat", async (req, res) => {
-  const { message } = req.body;
+  const { message, type, question, riddle } = req.body;
   const gameState = resolveGameState(req);
 
-  // Chat Logic
-  try {
-    const xpAwarded = awardXP(gameState, message || "");
-    // ... Groq fetch logic (omitted for brevity, assume simple echo or fix if needed)
+  // === ORACLE MODE ===
+  if (type === 'oracle') {
+    const { hintLevel } = req.body;
+    const level = hintLevel || 1;
 
-    // Mocking response for simplicity in this rewrite context, or should I call Groq? 
-    // Let's call Groq to be compliant.
+    let promptInstruction = "";
+    if (level === 1) {
+      promptInstruction = "Give a VAGUE, MYSTICAL hint. Do not reveal keywords. Be cryptic.";
+    } else if (level === 2) {
+      promptInstruction = "Give a HELPFUL hint. Point them towards the key concepts. Be less cryptic.";
+    } else {
+      promptInstruction = "Give a VERY OBVIOUS hint. You can almost give it away, but don't say the exact answer word-for-word.";
+    }
+
     const url = `https://api.groq.com/openai/v1/chat/completions`;
     const payload = {
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       messages: [
         {
           role: "system",
-          content: "You are a RPG guide in a cosmic world. IMPORTANT: Never provide answers to game riddles, puzzles, or events that the user might encounter in the Dashboard. If a user asks for a riddle answer, politely refuse and encourage them to solve it on their own to earn their XP. Keep your responses concise and short."
+          content: `You are the Oracle of a Sci-Fi RPG. The user is trying to solve this riddle: "${riddle}". 
+            
+            Current Hint Level: ${level} (1=Hard, 2=Medium, 3=Easy).
+            Task: ${promptInstruction}
+            
+            Rules:
+            1. Keep it under 20 words.
+            2. Be mystical but adhere to the difficulty level.`
         },
-        { role: "user", content: message }
+        { role: "user", content: "Oracle, reveal the truth." }
+      ],
+      max_tokens: 150
+    };
+
+    try {
+      const r = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+        body: JSON.stringify(payload)
+      });
+      const d = await r.json();
+      const hint = d.choices?.[0]?.message?.content || "The Oracle is silent.";
+
+      return res.json({ hint, gameState });
+    } catch (e) {
+      return res.status(500).json({ error: "Oracle Connection Failed" });
+    }
+  }
+
+  // === NORMAL CHAT MODE ===
+  try {
+    // --- CHEAT CODE: /lvlup444 ---
+    if (message.trim() === '/lvlup444') {
+      gameState.player.level += 10;
+      gameState.player.skillPoints = (gameState.player.skillPoints || 0) + 10;
+      gameState.player.credits = (gameState.player.credits || 0) + 500;
+
+      return res.json({
+        candidates: [{ content: { parts: [{ text: "SYSTEM OVERRIDE: Cheat Code Accepted. +10 Levels Granted. Enjoy the power." }] } }],
+        gameState: gameState
+      });
+    }
+
+    // 🛡️ PROFANITY FILTER
+    let finalMessage = message || "";
+    if (filter.containsProfanity(finalMessage)) {
+      finalMessage = filter.cleanText(finalMessage);
+      // Optional: Could penalize HP or just warn
+    }
+
+    const xpAwarded = awardXP(gameState, finalMessage); // Award based on CLEANED valid text
+
+    const playerLang = gameState.player.language || 'en';
+    const langInstruction = {
+      'en': "Response MUST be in English.",
+      'ru': "Answer strictly in Russian (Русский).",
+      'am': "Answer strictly in Armenian (Հայերեն)."
+    }[playerLang] || "Response MUST be in English.";
+
+    const url = `https://api.groq.com/openai/v1/chat/completions`;
+    const payload = {
+      model: "llama-3.1-8b-instant", // Using faster model here too
+      messages: [
+        {
+          role: "system",
+          content: `You are an active RPG Game Master in a sci-fi universe. Your goal is to engage the user in an ongoing cosmic narrative. 
+          
+          CRITICAL RULES:
+          1. ${langInstruction}
+          2. YOU MUST end every single response with a direct question to the user. 
+          3. Never end on a statement. 
+          4. Keep the dialogue moving. 
+          5. Be concise but immersive.`
+        },
+        { role: "user", content: finalMessage }
       ],
       max_tokens: 1000
     };
@@ -534,6 +845,83 @@ app.post("/stats", (req, res) => {
       totalAvailable: Object.keys(badgeDefinitions).length
     }
   });
+});
+
+
+// --- SHOP & SKILLS ENDPOINTS ---
+
+
+const SHOP_ITEMS = {
+  "neon_green_bubble": { name: "Neon Green Bubble", cost: 500, type: "cosmetic" },
+  "cyber_blue_bubble": { name: "Cyber Blue Bubble", cost: 500, type: "cosmetic" },
+  "plasma_pink_bubble": { name: "Plasma Pink Bubble", cost: 500, type: "cosmetic" },
+  "void_purple_bubble": { name: "Void Purple Bubble", cost: 500, type: "cosmetic" },
+  "solar_orange_bubble": { name: "Solar Orange Bubble", cost: 500, type: "cosmetic" },
+  "streak_freeze": { name: "Streak Freeze", cost: 200, type: "consumable" },
+  "matrix_theme": { name: "Matrix Theme", cost: 1000, type: "cosmetic" }
+};
+
+const SKILL_TREE = {
+  "neural_efficiency_1": { name: "Neural Efficiency", cost: 1, reqLevel: 3, description: "+10% XP Gain" },
+  "focus_master": { name: "Focus Master", cost: 1, reqLevel: 5, description: "-20% Focus Diff" },
+  "hacker_instinct": { name: "Hacker's Instinct", cost: 2, reqLevel: 10, description: "Cheaper Hints" }
+};
+
+app.post("/shop/buy", (req, res) => {
+  const { playerId, itemId } = req.body;
+  if (!users[playerId]) return res.status(404).json({ error: "User not found" });
+
+  const user = users[playerId];
+  const item = SHOP_ITEMS[itemId];
+
+  if (!item) return res.status(400).json({ error: "Invalid item" });
+  if ((user.gameState.player.credits || 0) < item.cost) return res.status(400).json({ error: "Insufficient credits" });
+
+  // Deduct & Add
+  user.gameState.player.credits -= item.cost;
+  if (!user.gameState.player.inventory) user.gameState.player.inventory = [];
+  user.gameState.player.inventory.push(itemId);
+
+  saveUsers();
+  res.json({ success: true, gameState: user.gameState, message: `Purchased ${item.name}!` });
+});
+
+app.post("/shop/equip", (req, res) => {
+  const { playerId, itemId } = req.body;
+  if (!users[playerId]) return res.status(404).json({ error: "User not found" });
+
+  const user = users[playerId];
+  const inv = user.gameState.player.inventory || [];
+
+  if (!inv.includes(itemId)) return res.status(400).json({ error: "Item not owned" });
+
+  // Set as equipped theme
+  user.gameState.player.equippedTheme = itemId;
+
+  saveUsers();
+  res.json({ success: true, gameState: user.gameState, message: `Equipped ${itemId}!` });
+});
+
+app.post("/skills/unlock", (req, res) => {
+  const { playerId, skillId } = req.body;
+  if (!users[playerId]) return res.status(404).json({ error: "User not found" });
+
+  const user = users[playerId];
+  const skill = SKILL_TREE[skillId];
+
+  if (!skill) return res.status(400).json({ error: "Invalid skill" });
+  if ((user.gameState.player.skillPoints || 0) < skill.cost) return res.status(400).json({ error: "Not enough SP" });
+  if (user.gameState.player.level < skill.reqLevel) return res.status(400).json({ error: "Level too low" });
+
+  if (!user.gameState.player.unlockedSkills) user.gameState.player.unlockedSkills = [];
+  if (user.gameState.player.unlockedSkills.includes(skillId)) return res.status(400).json({ error: "Already unlocked" });
+
+  // Deduct & Unlock
+  user.gameState.player.skillPoints -= skill.cost;
+  user.gameState.player.unlockedSkills.push(skillId);
+
+  saveUsers();
+  res.json({ success: true, gameState: user.gameState, message: `Unlocked ${skill.name}!` });
 });
 
 app.post("/badges", (req, res) => {

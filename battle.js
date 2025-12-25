@@ -137,10 +137,13 @@ async function createRoom() {
 
         currentRoomCode = data.code;
         myRole = 'host';
-        saveSession(currentRoomCode, myRole);  // Persist session
+        // Start XP from now
+        const startTotalXp = localGameState.player.totalXpEarned || 0;
+        saveSession(currentRoomCode, myRole, startTotalXp);  // Persist session
 
         console.log("Room created:", currentRoomCode);
         showBattleArena();
+        updateGoEarnXpBtn(); // Check button state
         connectSSE();
         startXPSync();
 
@@ -187,7 +190,9 @@ async function joinRoom(code = null) {
 
         currentRoomCode = roomCode;
         myRole = 'guest';
-        saveSession(currentRoomCode, myRole);  // Persist session
+        // Start XP from now
+        const startTotalXp = localGameState.player.totalXpEarned || 0;
+        saveSession(currentRoomCode, myRole, startTotalXp);  // Persist session
 
         console.log("Joined room:", currentRoomCode);
 
@@ -195,6 +200,7 @@ async function joinRoom(code = null) {
         updateOpponentUI(data.host);
 
         showBattleArena();
+        updateGoEarnXpBtn(); // Check button state
         connectSSE();
         startXPSync();
 
@@ -254,6 +260,9 @@ function handleSSEMessage(data) {
                 updateOpponentUI(data.player);
                 document.getElementById('battleStatus').textContent = "OPPONENT JOINED!";
                 document.getElementById('battleStatus').style.color = "#00ff00";
+
+                // Show button!
+                updateGoEarnXpBtn(true);
             }
             break;
 
@@ -272,6 +281,7 @@ function handleSSEMessage(data) {
         case 'player_left':
             document.getElementById('battleStatus').textContent = "OPPONENT LEFT";
             document.getElementById('battleStatus').style.color = "orange";
+            updateGoEarnXpBtn(false); // Hide button
             break;
     }
 }
@@ -298,13 +308,19 @@ async function sendXPUpdate() {
     if (!currentRoomCode || !localGameState?.player) return;
 
     try {
+        // Calculate Match XP (Current Total - Start Total)
+        const session = getSavedSession();
+        const startXp = session ? session.startTotalXp : 0;
+        const currentTotal = localGameState.player.totalXpEarned || 0;
+        const matchXp = Math.max(0, currentTotal - startXp);
+
         await fetch(`/arena/update/${currentRoomCode}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 playerId: localGameState.player.playerId,
-                xp: localGameState.player.xp || 0,
-                totalXp: localGameState.player.totalXpEarned || 0
+                xp: matchXp,
+                totalXp: currentTotal
             })
         });
     } catch (err) {
@@ -378,8 +394,14 @@ function updateSelfUI() {
     document.getElementById('p1Name').textContent = p.name;
     document.getElementById('p1Avatar').textContent = p.name.charAt(0);
     document.getElementById('p1Level').textContent = `LEVEL ${p.level}`;
-    document.getElementById('p1Xp').textContent = `${p.xp}/${XP_LIMIT}`;
-    document.getElementById('p1Bar').style.width = Math.min(100, (p.xp / XP_LIMIT) * 100) + "%";
+    // Display Match XP for self
+    const session = getSavedSession();
+    const startXp = session ? session.startTotalXp : 0;
+    const currentTotal = p.totalXpEarned || 0;
+    const matchXp = Math.max(0, currentTotal - startXp);
+
+    document.getElementById('p1Xp').textContent = `${matchXp}/${XP_LIMIT}`;
+    document.getElementById('p1Bar').style.width = Math.min(100, (matchXp / XP_LIMIT) * 100) + "%";
     document.getElementById('p1TotalXp').textContent = (p.totalXpEarned || 0).toLocaleString();
 }
 
@@ -445,8 +467,9 @@ if (roomFromUrl) {
 // SESSION PERSISTENCE
 // ============================================================================
 
-function saveSession(code, role) {
-    localStorage.setItem('arenaSession', JSON.stringify({ code, role, timestamp: Date.now() }));
+function saveSession(code, role, startTotalXp) {
+    if (startTotalXp === undefined) startTotalXp = 0;
+    localStorage.setItem('arenaSession', JSON.stringify({ code, role, startTotalXp, timestamp: Date.now() }));
 }
 
 function getSavedSession() {
@@ -542,3 +565,35 @@ async function reconnectToRoom(code, role) {
 // Expose for onclick handlers
 window.joinRoom = joinRoom;
 
+
+function updateGoEarnXpBtn(forceState = null) {
+    const btn = document.getElementById('goEarnXpBtn');
+    if (!btn) return;
+
+    if (forceState !== null) {
+        btn.style.display = forceState ? 'inline-block' : 'none';
+        return;
+    }
+
+    // Auto-detect
+    // Check if we have an opponent in the UI (quick check)
+    // Or check room state if available.
+    // simpler: If I am host, do I have a guest? If I am guest, I always have a host (conceptually)
+    // but guests join *into* a host.
+
+    // Actually, joinRoom updates opponent UI immediately.
+    // createRoom does NOT have an opponent yet.
+
+    // We can check if the opponent card has a name other than "Waiting..."
+    const p2Name = document.getElementById('p2Name').textContent;
+    const hasOpponent = p2Name !== "Waiting..." && p2Name !== "Opponent";
+
+    btn.style.display = hasOpponent ? 'inline-block' : 'none';
+}
+
+// Ensure button state on load/reconnect
+const originalShowBattleArena = showBattleArena;
+window.showBattleArena = function () {
+    originalShowBattleArena();
+    updateGoEarnXpBtn();
+};

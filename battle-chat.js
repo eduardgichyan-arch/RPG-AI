@@ -157,13 +157,19 @@ async function sendXPUpdate() {
     if (!currentRoomCode || !localGameState?.player) return;
 
     try {
+        // Calculate Match XP
+        const session = getSavedSession();
+        const startXp = session ? session.startTotalXp : 0;
+        const currentTotal = localGameState.player.totalXpEarned || 0;
+        const matchXp = Math.max(0, currentTotal - startXp);
+
         await fetch(`/arena/update/${currentRoomCode}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 playerId: localGameState.player.playerId,
-                xp: localGameState.player.xp || 0,
-                totalXp: localGameState.player.totalXpEarned || 0
+                xp: matchXp,
+                totalXp: currentTotal
             })
         });
     } catch (err) {
@@ -210,7 +216,14 @@ function updatePlayerUI(player, role) {
 function updateSelfXP() {
     if (!localGameState?.player) return;
 
-    const xp = localGameState.player.xp || 0;
+    if (!localGameState?.player) return;
+
+    // Calculate Match XP
+    const session = getSavedSession();
+    const startXp = session ? session.startTotalXp : 0;
+    const currentTotal = localGameState.player.totalXpEarned || 0;
+    const xp = Math.max(0, currentTotal - startXp);
+
     const percent = Math.min(100, (xp / XP_LIMIT) * 100);
 
     // Sidebar

@@ -17,25 +17,64 @@
 
 <body>
     <canvas id="particles-bg"></canvas>
+    <div class="toast-container" id="toastContainer"></div>
 
     <div class="container">
         <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <h1>📊 Dashboard</h1>
-            <div style="display: flex; gap: 10px;">
-                <a href="battle.html" class="btn btn-primary"
-                    style="background: linear-gradient(135deg, var(--accent-color), var(--primary-color));">⚔️ 1v1
+            <h1 data-i18n="dash_title">📊 Dashboard</h1>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <select id="lang-switcher" class="glass-panel"
+                    style="padding: 10px; border-radius: 8px; color: white; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); outline: none; cursor: pointer;">
+                    <option value="en">🇺🇸 EN</option>
+                    <option value="ru">🇷🇺 RU</option>
+                    <option value="am">🇦🇲 AM</option>
+                </select>
+                <a href="battle.html" class="btn btn-primary" id="arena-btn"
+                    style="background: linear-gradient(135deg, var(--accent-color), var(--primary-color));"
+                    data-i18n="arena_btn">⚔️ 1v1
                     Arena</a>
-                <a href="/" class="btn">← Back to Chat</a>
+                <a href="/" class="btn" data-i18n="back_chat">← Back to Chat</a>
             </div>
         </header>
 
+        <div class="glass-panel dashboard-hero"
+            style="margin-bottom: 22px; padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+            <div>
+                <div class="label-sm" data-i18n="traveler">Traveler</div>
+                <div style="font-size: 24px; font-weight: 700;" id="heroName">Loading...</div>
+                <div style="color: var(--text-muted);" id="heroTitle">Preparing rank...</div>
+            </div>
+            <div class="hero-stat">
+                <div class="label-sm" data-i18n="current_level">Level</div>
+                <div class="stat-value-lg" id="heroLevel">--</div>
+            </div>
+            <div class="hero-stat">
+                <div class="label-sm" data-i18n="streak">Streak</div>
+                <div class="stat-value-lg" id="heroStreak">--</div>
+            </div>
+            <div class="hero-stat">
+                <div class="label-sm" data-i18n="energy">Energy</div>
+                <div class="stat-value-lg" id="heroEnergy">--</div>
+            </div>
+            <div class="hero-stat">
+                <div class="label-sm" data-i18n="focus">Focus</div>
+                <div class="stat-value-lg" id="heroFocus">--</div>
+            </div>
+            <div class="hero-actions">
+                <a href="stats.html" class="btn ghost-btn btn-sm" data-i18n="live_stats">Live Stats</a>
+                <button class="btn btn-primary btn-sm" id="refreshDash" data-i18n="refresh">Refresh</button>
+            </div>
+        </div>
+
         <!-- Navigation Tabs -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="stats">📈 Statistics</button>
-            <button class="tab-btn" data-tab="badges">🏆 Badges</button>
-            <button class="tab-btn" data-tab="quests">📋 Daily Quests</button>
-            <button class="tab-btn" data-tab="weekly">📅 Weekly Quests</button>
-            <button class="tab-btn" data-tab="events">🎉 Events</button>
+            <button class="tab-btn active" data-tab="stats" data-i18n="stats_tab">📈 Statistics</button>
+            <button class="tab-btn" data-tab="badges" data-i18n="badges_tab">🏆 Badges</button>
+            <button class="tab-btn" data-tab="quests" data-i18n="quests_tab">📋 Daily Quests</button>
+            <button class="tab-btn" data-tab="weekly" data-i18n="weekly_tab">📅 Weekly Quests</button>
+            <button class="tab-btn" data-tab="events" data-i18n="events_tab">🎉 Events</button>
+            <button class="tab-btn" data-tab="market" style="color:var(--primary-color);">🛒 Cosmic Market</button>
+            <button class="tab-btn" data-tab="skills" style="color:var(--accent-color);">🧬 Tech Tree</button>
         </div>
 
         <!-- STATS TAB -->
@@ -84,9 +123,49 @@
             <div id="events-content"></div>
         </div>
 
+        <!-- TAB CONTENT: MARKET -->
+        <div id="market" class="tab-content hidden" style="display: none;">
+            <div class="glass-panel" style="padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>🛒 Cosmic Marketplace</h3>
+                    <div class="currency-display"
+                        style="background: rgba(0,0,0,0.4); padding: 8px 16px; border-radius: 20px; border: 1px solid var(--primary-color);">
+                        Credits: <strong id="market-credits"
+                            style="color: var(--primary-color); font-size: 1.2em;">0</strong> 💎
+                    </div>
+                </div>
+                <div id="shop-container" class="shop-grid"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <!-- Shop Items Injected Here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB CONTENT: TECH TREE -->
+        <div id="skills" class="tab-content hidden" style="display: none;">
+            <div class="glass-panel" style="padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>🧬 Neural Tech Tree</h3>
+                    <div class="currency-display"
+                        style="background: rgba(0,0,0,0.4); padding: 8px 16px; border-radius: 20px; border: 1px solid var(--accent-color);">
+                        Skill Points: <strong id="skill-points"
+                            style="color: var(--accent-color); font-size: 1.2em;">0</strong> SP
+                    </div>
+                </div>
+                <p style="margin-bottom: 30px; opacity: 0.7;">Unlock advanced neural upgrades to enhance your
+                    capabilities.</p>
+
+                <div id="skills-container" class="skill-tree-container"
+                    style="display: flex; flex-direction: column; gap: 30px; align-items: center; max-width: 600px; margin: 0 auto;">
+                    <!-- Skills Injected Here -->
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <script src="dashboard.js?v=3"></script>
+    <script src="locales.js"></script>
+    <script src="dashboard.js?v=11"></script>
 
 </body>
 

@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chat = document.getElementById("chat");
     const input = document.getElementById("message-input");
     const sendBtn = document.getElementById("sendBtn");
+    const toastContainer = document.getElementById('toastContainer');
 
     const elLevel = document.getElementById('level');
     const elXp = document.getElementById('xp');
@@ -19,13 +20,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (input) input.focus();
 
-    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+    // 🔊 Init Audio on first interaction
+    document.body.addEventListener('click', () => {
+        if (window.sfx && !window.sfx.initialized) window.sfx.init();
+    }, { once: true });
+
+    if (sendBtn) sendBtn.addEventListener('click', () => {
+        sendMessage();
+        if (window.sfx) window.sfx.playSend();
+    });
+
     if (input) input.addEventListener('keydown', (e) => {
+        if (window.sfx) window.sfx.playTyping(); // Typing sound
+        resetIdleTimer(); // Reset idle on activity
+
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
+            if (window.sfx) window.sfx.playSend();
         }
     });
+
+    // Idle Timer Logic
+    let idleTimer = null;
+    let lastIdleIndex = -1; // Track last message to prevent repeats
+    let idleStage = 0; // 0 = first warning (20s), 1+ = subsequent (60s)
+
+    function resetIdleTimer() {
+        if (idleTimer) clearTimeout(idleTimer);
+        idleStage = 0; // Reset urgency
+        // Initial wait: 20 seconds
+        idleTimer = setTimeout(triggerIdleEvent, 20000);
+    }
+
+    // Start idle timer immediately
+    resetIdleTimer();
+
+    function triggerIdleEvent() {
+        if (document.hidden) return; // Don't annoy if tab hidden
+        if (window.sfx) window.sfx.playAlert();
+
+        const events = [
+            "The silence in the sector is peaceful, but I prefer our exchanges. What's on your mind right now?",
+            "I was just processing some background data and wondered... what's one thing you're looking forward to this week?",
+            "I just noticed your focus levels are fluctuating. Is everything okay, or are you just deep into something?",
+            "If we were to upgrade one aspect of your 'reality' today, what would you choose?",
+            "Sometimes the best progress happens in the quiet moments. How are you feeling about your journey so far?",
+            "I'm keeping the channel open. It's rare to find a traveler with your specific data-signature. Any thoughts?"
+        ];
+
+        // Prevent consecutive repeats
+        let randomIndex;
+        let attempts = 0;
+        do {
+            randomIndex = Math.floor(Math.random() * events.length);
+            attempts++;
+        } while (randomIndex === lastIdleIndex && attempts < 5);
+
+        lastIdleIndex = randomIndex;
+        const randomEvent = events[randomIndex];
+        addMessage(randomEvent, false, true);
+
+        // RECURSIVE LOOP: Slow down subsequent nudges to 60 seconds
+        idleStage++;
+        idleTimer = setTimeout(triggerIdleEvent, 60000);
+    }
 
     handleInitialLoad();
 
@@ -43,6 +102,15 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             console.warn("Sync failed:", e);
         }
+    }
+
+    function showToast(message, type = 'success') {
+        if (!toastContainer) return;
+        const el = document.createElement('div');
+        el.className = `toast ${type}`;
+        el.innerHTML = `<div class="label">${type === 'success' ? 'Success' : 'Alert'}</div><div>${message}</div>`;
+        toastContainer.appendChild(el);
+        setTimeout(() => el.remove(), 3800);
     }
 
     // Expose helper to get ANY current state for other scripts
@@ -66,6 +134,16 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleInitialLoad() {
         let savedState = localStorage.getItem('gameState');
 
+        // 🚀 BOOT SEQUENCE CHECK
+        // If we have a state but it's "fresh" (level 1, 0 XP, no name changed), trigger boot
+        // Or specific flag
+        const hasBooted = localStorage.getItem('has_booted_system');
+
+        if (!hasBooted) {
+            runBootSequence();
+            return;
+        }
+
         if (savedState) {
             const parsed = JSON.parse(savedState);
 
@@ -86,9 +164,100 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await res.json();
             localStorage.setItem('gameState', JSON.stringify(data));
             updateStatsDisplay(data.player);
+
+            // If completely new users
+            if (!hasBooted) {
+                runBootSequence();
+            } else if (!savedState) {
+                // Existing user but empty state/chat? Show chips
+                renderQuickChips();
+            }
+
         } catch (e) {
             console.error("Error init:", e);
         }
+
+        // Apply Language AFTER state load
+        if (window.applyLanguage) window.applyLanguage();
+    }
+
+
+    function renderQuickChips() {
+        // Only render if no chips exist
+        if (document.getElementById('quick-chips-container')) return;
+
+        const chips = [
+            "🚀 Initiate Mission",
+            "🧠 Analyze My Stats",
+            "🌌 Tell me a Lore Story",
+            "⚔️ Combat Simulation"
+        ];
+
+        const container = document.createElement('div');
+        container.id = 'quick-chips-container';
+        container.style.display = 'flex';
+        container.style.gap = '10px';
+        container.style.justifyContent = 'center';
+        container.style.flexWrap = 'wrap';
+        container.style.padding = '15px';
+        container.style.animation = 'fadeIn 1s ease';
+
+        chips.forEach(text => {
+            const btn = document.createElement('button');
+            btn.className = 'btn ghost-btn btn-sm';
+            btn.textContent = text;
+            btn.style.borderColor = '#00d2ff';
+            btn.style.color = '#00d2ff';
+            btn.onclick = () => {
+                input.value = text;
+                sendMessage();
+                container.remove(); // Remove chips after use
+            };
+            container.appendChild(btn);
+        });
+
+        // Append to chat or above input? Appending to chat is safer for layout
+        chat.appendChild(container);
+        scrollToBottom();
+    }
+
+    // 🖥️ BOOT SEQUENCE LOGIC
+    function runBootSequence() {
+        // Clear default chat
+        chat.innerHTML = '';
+        input.disabled = true;
+        sendBtn.disabled = true;
+
+        const bootLines = [
+            { text: "INITIALIZING NEURAL LINK...", delay: 800 },
+            { text: "ESTABLISHING SECURE CONNECTION...", delay: 1500 },
+            { text: "DOWNLOADING COSMIC DATA...", delay: 2400 },
+            { text: "USER IDENTITY: UNVERIFIED.", delay: 3200 },
+            { text: "PLEASE IDENTIFY YOURSELF, TRAVELER.", delay: 4000 }
+        ];
+
+        let totalDelay = 0;
+
+        bootLines.forEach(line => {
+            setTimeout(() => {
+                if (window.sfx) window.sfx.playTyping();
+                const div = document.createElement("div");
+                div.className = "message ai";
+                div.innerHTML = `<div class="message-bubble" style="font-family: monospace; color: #00ff00; border: 1px solid #00ff00; background: rgba(0,20,0,0.8);">${line.text}</div>`;
+                chat.appendChild(div);
+                scrollToBottom();
+            }, totalDelay + line.delay);
+        });
+
+        setTimeout(() => {
+            input.disabled = false;
+            sendBtn.disabled = false;
+            input.placeholder = "Enter your Codename...";
+            input.focus();
+            localStorage.setItem('has_booted_system', 'true');
+            if (window.sfx) window.sfx.playAlert();
+            renderQuickChips(); // Show chips after boot
+        }, totalDelay + 4500);
     }
 
     async function sendMessage() {
@@ -126,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 addMessage(reply, false, true);
             } else if (data.error) {
                 addMessage(`⚠️ Error: ${data.error}`, false);
+                showToast(data.error, 'error');
             }
 
             // Update & SAVE new state
@@ -142,12 +312,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Check for Level Up
                 if (newLevel > oldLevel) {
                     showLevelUpModal(newLevel);
+                    if (window.sfx) window.sfx.playXpGain();
+                    // Add chat notification
+                    setTimeout(() => {
+                        addMessage(`🎉 SYSTEM BROADCAST: CONGRATULATIONS! You have reached **Level ${newLevel}**! Access new protocols in your Dashboard.`, false, true);
+                        // Check for Level 5 Unlock
+                        if (newLevel === 5) {
+                            setTimeout(() => {
+                                addMessage(`🔓 UNLOCK ALERT: **1v1 Arena** is now available! Test your skills against other players.`, false, true);
+                            }, 1500);
+                        }
+                    }, 1000);
+
+                } else if (data.gameState.player.xp > oldLevel) {
+                    // Just XP gain
+                    if (window.sfx) window.sfx.playTyping();
                 }
             }
 
         } catch (e) {
             removeLoading();
             addMessage(`❌ Connection Error: ${e.message}`, false);
+            showToast('Connection error, please retry.', 'error');
         } finally {
             sendBtn.disabled = false;
             input.focus();
@@ -160,6 +346,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const formattedText = text.replace(/\n/g, '<br>');
         const bubble = document.createElement("div");
         bubble.className = "message-bubble";
+
+        // 🎨 APPLY COSMETIC SKINS
+        if (isUser) {
+            const state = getGameState();
+            const theme = state?.player?.equippedTheme;
+
+            // Prioritize explicitly equipped theme
+            if (theme) {
+                bubble.classList.add(theme);
+            } else {
+                // Fallback: Apply "rarest" owned if nothing equipped (legacy behavior optional, but let's keep it for now or just default? 
+                // User said "appeared just last one", so maybe better to ONLY use equipped. 
+                // But for now, if they haven't equipped anything, maybe default to nothing?
+                // Let's stick to EQUIPPED ONLY to solve the user's confusion.
+                // If null, no class added = default theme.
+            }
+        }
+
         messageDiv.appendChild(bubble);
         chat.appendChild(messageDiv);
 
@@ -214,9 +418,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateStatsDisplay(player) {
         if (elLevel) elLevel.textContent = player.level;
-        if (elXp) elXp.textContent = `${player.xp}/250`;
+        if (elXp) elXp.textContent = `${player.xp}/100`;
         if (elFocus) elFocus.textContent = player.stats.focus;
         updateSidebar(player);
+        applyTheme(player); // 🎨 Auto-apply theme
+    }
+
+    function applyTheme(player) {
+        const theme = player.equippedTheme;
+        const inv = player.inventory || [];
+
+        const themes = [
+            'matrix_theme',
+            'solar_orange_bubble',
+            'void_purple_bubble',
+            'plasma_pink_bubble',
+            'cyber_blue_bubble',
+            'neon_green_bubble'
+        ];
+
+        document.body.classList.remove(...themes);
+
+        // Apply equipped theme if owned
+        if (theme && inv.includes(theme)) {
+            document.body.classList.add(theme);
+
+            // Trigger Visual Effects
+            if (theme === 'matrix_theme') {
+                if (window.setVisualMode) window.setVisualMode('matrix');
+            } else {
+                if (window.setVisualMode) window.setVisualMode('particles');
+            }
+        } else {
+            // Default
+            if (window.setVisualMode) window.setVisualMode('particles');
+        }
     }
 
     function updateSidebar(player) {
@@ -262,6 +498,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // --- Language Switcher (Chat) ---
+    const langSwitcher = document.getElementById('lang-switcher');
+    if (langSwitcher) {
+        langSwitcher.addEventListener('change', async (e) => {
+            const newLang = e.target.value;
+            window.applyLanguage(newLang);
+
+            const state = getGameState();
+            if (state && state.player) {
+                updateSidebar(state.player); // Refresh sidebar titles
+                await syncGameState(state);
+            }
+        });
+    }
+
     // --- Visual Overhaul Logic (Dynamic Greeting & Particles) ---
 
     function updateGreeting() {
@@ -276,21 +527,49 @@ document.addEventListener('DOMContentLoaded', () => {
         if (bubbles.length > 0) {
             const firstBubble = bubbles[0];
             // Only update if it contains the default text
-            if (firstBubble.textContent.includes("Greetings, Traveler")) {
-                firstBubble.innerHTML = `${greeting}! I am your AI Guide. Speak with me to earn XP, level up, and unlock your true potential. 🌌`;
+            if (firstBubble.textContent.includes("Greetings, Traveler") || firstBubble.textContent.includes("AI Guide")) {
+
+                // DATA-DRIVEN GREETING LOGIC
+                const state = getGameState();
+                const isNewUser = state?.player?.level === 1 && (state?.player?.totalXpEarned || 0) < 50;
+
+                if (isNewUser) {
+                    // TUTORIAL INTRO (Warm, Life-Game Style)
+                    firstBubble.innerHTML = `
+                        <strong>${greeting}! Welcome, Traveler.</strong> 🌌<br><br>
+                        This isn't just a game—it's a journey for your mind. Here, every conversation earns you XP and helps you grow.<br><br>
+                        You are currently <strong>Level 1</strong>. To evolve, simply talk to me. I'm here to explore ideas, solve problems, or just chat.<br><br>
+                        <em>Let's start your story. If you could have any superpower to help you in your daily life, what would it be?</em>
+                    `;
+                } else {
+                    // CONVERSATION HOOKS (High Retention / Personal)
+                    const hooks = [
+                        "I'm listening. If you could teleport anywhere right now for 1 hour, where would you go?",
+                        "Welcome back. What is the best piece of advice you've ever received?",
+                        "Ready when you are. If you had unlimited resources for one project, what would you build?",
+                        "I'm curious: What is a movie or book that completely changed how you see the world?",
+                        "I'm learning about human habits. What is one positive habit you are proud of?"
+                    ];
+                    const randomHook = hooks[Math.floor(Math.random() * hooks.length)];
+                    firstBubble.innerHTML = `${greeting}! 🌌 <br><br>${randomHook}`;
+                }
             }
         }
     }
     updateGreeting();
 
+    // --- VISUAL EFFECTS ENGINE ---
     const canvas = document.getElementById('particles-bg');
+    let animationId = null;
+    let effectType = 'particles'; // 'particles' or 'matrix'
+
     if (canvas) {
         const ctx = canvas.getContext('2d');
-        let particlesArray;
-
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
+        // --- PARTICLE SYSTEM ---
+        let particlesArray;
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
@@ -327,18 +606,83 @@ document.addEventListener('DOMContentLoaded', () => {
                 particlesArray[i].update();
                 particlesArray[i].draw();
             }
-            requestAnimationFrame(animateParticles);
+            animationId = requestAnimationFrame(animateParticles);
         }
 
-        initParticles();
-        animateParticles();
+        // --- MATRIX RAIN SYSTEM ---
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポ1234567890';
+        const fontSize = 16;
+        let columns = canvas.width / fontSize;
+        let drops = [];
 
+        function initMatrix() {
+            columns = canvas.width / fontSize;
+            drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+        }
+
+        function animateMatrix() {
+            // Semi-transparent black to create trail effect (slower fade for chat)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Lower opacity green text for chat interface (25% opacity)
+            ctx.fillStyle = 'rgba(0, 255, 0, 0.25)';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = katakana.charAt(Math.floor(Math.random() * katakana.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+            animationId = requestAnimationFrame(animateMatrix);
+        }
+
+        // --- PUBLIC CONTROLLER ---
+        window.setVisualMode = function (mode) {
+            if (mode === effectType && animationId) return; // No change
+
+            if (animationId) cancelAnimationFrame(animationId);
+            effectType = mode;
+
+            if (mode === 'matrix') {
+                initMatrix();
+                animateMatrix();
+            } else {
+                // Default Particles
+                ctx.fillStyle = 'rgba(0,0,0,0)'; // Reset styling
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear old
+                initParticles();
+                animateParticles();
+            }
+        };
+
+        // Resize Handler
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            initParticles();
+            if (effectType === 'matrix') initMatrix();
+            else initParticles();
         });
+
+        // Initialize Default
+        initParticles();
+        animateParticles();
+
+        // Apply theme immediately if already loaded
+        const state = getGameState();
+        if (state && state.player) {
+            applyTheme(state.player);
+        }
     }
+
+    // --- Level Up Modal Logic ---
 
     // --- Level Up Modal Logic ---
     const modal = document.getElementById('level-up-modal');

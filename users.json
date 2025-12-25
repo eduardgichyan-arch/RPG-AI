@@ -1,11 +1,11 @@
 {
-  "WG026928": {
-    "playerId": "WG026928",
-    "username": "Ed",
-    "password": "Ed",
+  "QZ977095": {
+    "playerId": "QZ977095",
+    "username": "eudheud",
+    "password": "wdwidjf839h1238rfehn",
     "gameState": {
       "player": {
-        "name": "Ed",
+        "name": "eudheud",
         "level": 1,
         "xp": 0,
         "totalXpEarned": 0,
@@ -24,9 +24,9 @@
         },
         "streak": 0,
         "longestStreak": 0,
-        "currentDay": 22,
-        "lastMessageDay": "Mon Dec 22 2025",
-        "lastMessageTime": 1766412879965,
+        "currentDay": 24,
+        "lastMessageDay": "Wed Dec 24 2025",
+        "lastMessageTime": 1766581327767,
         "badges": [],
         "statistics": {
           "totalMessages": 0,
@@ -40,12 +40,1333 @@
           "dailyQuestsCompletedTotal": 0
         },
         "personalityType": "Unknown",
-        "playerId": "WG026928"
+        "playerId": "QZ977095"
       },
       "dailyQuests": [],
       "weeklyQuests": [],
-      "lastQuestGenerationDay": "Mon Dec 22 2025",
-      "lastWeeklyQuestGenDate": "Mon Dec 22 2025",
+      "lastQuestGenerationDay": "Wed Dec 24 2025",
+      "lastWeeklyQuestGenDate": "Wed Dec 24 2025",
+      "messageCount": 0
+    }
+  },
+  "TW607633": {
+    "playerId": "TW607633",
+    "username": "gdggdgdgd",
+    "password": "edeydbehbdybedyebd",
+    "gameState": {
+      "player": {
+        "name": "gdggdgdgd",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 24,
+        "lastMessageDay": "Wed Dec 24 2025",
+        "lastMessageTime": 1766581327767,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "playerId": "TW607633"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Wed Dec 24 2025",
+      "lastWeeklyQuestGenDate": "Wed Dec 24 2025",
+      "messageCount": 0
+    }
+  },
+  "JG997503": {
+    "playerId": "JG997503",
+    "username": "eurh3289hrf",
+    "password": "f43fuhn43oignm4",
+    "gameState": {
+      "player": {
+        "name": "eurh3289hrf",
+        "level": 63,
+        "xp": 25,
+        "totalXpEarned": 6225,
+        "title": "Master of Discourse",
+        "titleLevel": 5,
+        "stats": {
+          "health": 100,
+          "energy": 46,
+          "focus": 54,
+          "discipline": 50,
+          "productivity": 40,
+          "consistency": 50,
+          "creativity": 30,
+          "kindness": 60,
+          "awareness": 70
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 24,
+        "lastMessageDay": "Wed Dec 24 2025",
+        "lastMessageTime": 1766589183998,
+        "badges": [
+          "bibliophile",
+          "master"
+        ],
+        "statistics": {
+          "totalMessages": 2,
+          "totalXpEarned": 25,
+          "averageXpPerMessage": 13,
+          "highestSingleMessageXp": 15,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "ISFP",
+        "playerId": "JG997503",
+        "lastMessageContent": "\"what has hands but cannot clap?\""
+      },
+      "dailyQuests": [
+        {
+          "title": "Reach 500+ character question",
+          "target": 1,
+          "type": "long-message",
+          "xp": 50,
+          "id": 0,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Send 3 meaningful messages",
+          "target": 3,
+          "type": "messages",
+          "xp": 50,
+          "id": 1,
+          "progress": 2,
+          "completed": false
+        },
+        {
+          "title": "Ask a question with 10+ words",
+          "target": 1,
+          "type": "long-question",
+          "xp": 40,
+          "id": 2,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Short & Sweet (< 20 chars)",
+          "target": 1,
+          "type": "short-message",
+          "xp": 30,
+          "id": 3,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Earn 250 XP today",
+          "target": 250,
+          "type": "xp-gain",
+          "xp": 75,
+          "id": 4,
+          "progress": 25,
+          "completed": false
+        },
+        {
+          "title": "Maintain 70+ Focus during session",
+          "target": 1,
+          "type": "focus-maintenance",
+          "xp": 45,
+          "id": 5,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Build a 3-message conversation",
+          "target": 3,
+          "type": "streak",
+          "xp": 55,
+          "id": 6,
+          "progress": 2,
+          "completed": false
+        }
+      ],
+      "weeklyQuests": [
+        {
+          "title": "Earn 500 XP this week",
+          "target": 500,
+          "type": "xp-gain",
+          "xp": 400,
+          "id": 0,
+          "progress": 25,
+          "completed": false
+        },
+        {
+          "title": "Complete 10 Daily Quests",
+          "target": 10,
+          "type": "daily-quests-week",
+          "xp": 350,
+          "id": 1,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Send 50 messages this week",
+          "target": 50,
+          "type": "volume",
+          "xp": 300,
+          "id": 2,
+          "progress": 2,
+          "completed": false
+        }
+      ],
+      "lastQuestGenerationDay": "Wed Dec 24 2025",
+      "lastWeeklyQuestGenDate": "Wed Dec 24 2025",
+      "messageCount": 0
+    }
+  },
+  "ZV429465": {
+    "playerId": "ZV429465",
+    "username": "Edooo",
+    "password": "444",
+    "gameState": {
+      "player": {
+        "name": "Edooo",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766664912858,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "playerId": "ZV429465"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "IT121998": {
+    "playerId": "IT121998",
+    "username": "samo",
+    "password": "samo123",
+    "gameState": {
+      "player": {
+        "name": "samo",
+        "level": 1,
+        "xp": 10,
+        "totalXpEarned": 10,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 48,
+          "focus": 52,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766667192755,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 1,
+          "totalXpEarned": 10,
+          "averageXpPerMessage": 10,
+          "highestSingleMessageXp": 10,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "INTP",
+        "playerId": "IT121998",
+        "lastMessageContent": "kill anythink"
+      },
+      "dailyQuests": [
+        {
+          "title": "Ask a question with 10+ words",
+          "target": 1,
+          "type": "long-question",
+          "xp": 40,
+          "id": 0,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Build a 3-message conversation",
+          "target": 3,
+          "type": "streak",
+          "xp": 55,
+          "id": 1,
+          "progress": 1,
+          "completed": false
+        },
+        {
+          "title": "Ask a philosophical question",
+          "target": 1,
+          "type": "philosophical",
+          "xp": 35,
+          "id": 2,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Reach 500+ character question",
+          "target": 1,
+          "type": "long-message",
+          "xp": 50,
+          "id": 3,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Maintain 70+ Focus during session",
+          "target": 1,
+          "type": "focus-maintenance",
+          "xp": 45,
+          "id": 4,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Earn 50+ XP in one message",
+          "target": 1,
+          "type": "high-xp-message",
+          "xp": 60,
+          "id": 5,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Ask 3 questions",
+          "target": 3,
+          "type": "questions",
+          "xp": 40,
+          "id": 6,
+          "progress": 0,
+          "completed": false
+        }
+      ],
+      "weeklyQuests": [
+        {
+          "title": "Earn 500 XP this week",
+          "target": 500,
+          "type": "xp-gain",
+          "xp": 400,
+          "id": 0,
+          "progress": 10,
+          "completed": false
+        },
+        {
+          "title": "Complete 10 Daily Quests",
+          "target": 10,
+          "type": "daily-quests-week",
+          "xp": 350,
+          "id": 1,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Send 50 messages this week",
+          "target": 50,
+          "type": "volume",
+          "xp": 300,
+          "id": 2,
+          "progress": 1,
+          "completed": false
+        }
+      ],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "DF028475": {
+    "playerId": "DF028475",
+    "username": "Gevhhhh",
+    "password": "wdfwerg",
+    "gameState": {
+      "player": {
+        "name": "Gevhhhh",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 20,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 80,
+          "consistency": 50,
+          "creativity": 80,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766665997152,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "INTJ",
+        "playerId": "DF028475"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "DG835179": {
+    "playerId": "DG835179",
+    "username": "maria888",
+    "password": "mmaarriiaa",
+    "gameState": {
+      "player": {
+        "name": "maria888",
+        "level": 1,
+        "xp": 10,
+        "totalXpEarned": 10,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 48,
+          "focus": 52,
+          "discipline": 50,
+          "productivity": 30,
+          "consistency": 50,
+          "creativity": 60,
+          "kindness": 70,
+          "awareness": 80
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766667751296,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 1,
+          "totalXpEarned": 10,
+          "averageXpPerMessage": 10,
+          "highestSingleMessageXp": 10,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "ISFP",
+        "playerId": "DG835179",
+        "lastMessageContent": "🌌 tell me a lore story"
+      },
+      "dailyQuests": [
+        {
+          "title": "Maintain 70+ Focus during session",
+          "target": 1,
+          "type": "focus-maintenance",
+          "xp": 45,
+          "id": 0,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Short & Sweet (< 20 chars)",
+          "target": 1,
+          "type": "short-message",
+          "xp": 30,
+          "id": 1,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Ask a question with 10+ words",
+          "target": 1,
+          "type": "long-question",
+          "xp": 40,
+          "id": 2,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Ask 3 questions",
+          "target": 3,
+          "type": "questions",
+          "xp": 40,
+          "id": 3,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Send 3 meaningful messages",
+          "target": 3,
+          "type": "messages",
+          "xp": 50,
+          "id": 4,
+          "progress": 1,
+          "completed": false
+        },
+        {
+          "title": "Earn 250 XP today",
+          "target": 250,
+          "type": "xp-gain",
+          "xp": 75,
+          "id": 5,
+          "progress": 10,
+          "completed": false
+        },
+        {
+          "title": "Earn 50+ XP in one message",
+          "target": 1,
+          "type": "high-xp-message",
+          "xp": 60,
+          "id": 6,
+          "progress": 0,
+          "completed": false
+        }
+      ],
+      "weeklyQuests": [
+        {
+          "title": "Send 50 messages this week",
+          "target": 50,
+          "type": "volume",
+          "xp": 300,
+          "id": 0,
+          "progress": 1,
+          "completed": false
+        },
+        {
+          "title": "Earn 500 XP this week",
+          "target": 500,
+          "type": "xp-gain",
+          "xp": 400,
+          "id": 1,
+          "progress": 10,
+          "completed": false
+        },
+        {
+          "title": "Maintain 80+ Focus for 3 days",
+          "target": 3,
+          "type": "focus-week",
+          "xp": 250,
+          "id": 2,
+          "progress": 0,
+          "completed": false
+        }
+      ],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "WU745174": {
+    "playerId": "WU745174",
+    "username": "Vrezh",
+    "password": "Vrezh2011",
+    "gameState": {
+      "player": {
+        "name": "Vrezh",
+        "level": 61,
+        "xp": 50,
+        "totalXpEarned": 50,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 50,
+          "focus": 60,
+          "discipline": 50,
+          "productivity": 80,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 80,
+          "awareness": 80
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766675241172,
+        "badges": [
+          "anomaly-initiate",
+          "level-ten"
+        ],
+        "statistics": {
+          "totalMessages": 5,
+          "totalXpEarned": 50,
+          "averageXpPerMessage": 10,
+          "highestSingleMessageXp": 10,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 2,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "ESFJ",
+        "playerId": "WU745174",
+        "language": "en",
+        "lastMessageContent": "/lvlup4444",
+        "skillPoints": 60,
+        "credits": 300,
+        "inventory": [
+          "neon_green_bubble",
+          "plasma_pink_bubble",
+          "solar_orange_bubble",
+          "streak_freeze",
+          "matrix_theme"
+        ],
+        "equippedTheme": "matrix_theme"
+      },
+      "dailyQuests": [
+        {
+          "title": "Send 3 meaningful messages",
+          "target": 3,
+          "type": "messages",
+          "xp": 50,
+          "id": 0,
+          "progress": 3,
+          "completed": true
+        },
+        {
+          "title": "Earn 50+ XP in one message",
+          "target": 1,
+          "type": "high-xp-message",
+          "xp": 60,
+          "id": 1,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Build a 3-message conversation",
+          "target": 3,
+          "type": "streak",
+          "xp": 55,
+          "id": 2,
+          "progress": 3,
+          "completed": true
+        },
+        {
+          "title": "Reach 500+ character question",
+          "target": 1,
+          "type": "long-message",
+          "xp": 50,
+          "id": 3,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Ask 3 questions",
+          "target": 3,
+          "type": "questions",
+          "xp": 40,
+          "id": 4,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Ask a philosophical question",
+          "target": 1,
+          "type": "philosophical",
+          "xp": 35,
+          "id": 5,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Maintain 70+ Focus during session",
+          "target": 1,
+          "type": "focus-maintenance",
+          "xp": 45,
+          "id": 6,
+          "progress": 0,
+          "completed": false
+        }
+      ],
+      "weeklyQuests": [
+        {
+          "title": "Maintain 80+ Focus for 3 days",
+          "target": 3,
+          "type": "focus-week",
+          "xp": 250,
+          "id": 0,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Ask 20 questions",
+          "target": 20,
+          "type": "questions",
+          "xp": 200,
+          "id": 1,
+          "progress": 0,
+          "completed": false
+        },
+        {
+          "title": "Complete 10 Daily Quests",
+          "target": 10,
+          "type": "daily-quests-week",
+          "xp": 350,
+          "id": 2,
+          "progress": 0,
+          "completed": false
+        }
+      ],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "GM108827": {
+    "playerId": "GM108827",
+    "username": "TestUser_5899",
+    "password": "password123",
+    "gameState": {
+      "player": {
+        "name": "TestUser_5899",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766665997152,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "playerId": "GM108827"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "PY912970": {
+    "playerId": "PY912970",
+    "username": "TestUser_4559",
+    "password": "password123",
+    "gameState": {
+      "player": {
+        "name": "TestUser_4559",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766668558661,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "language": "ru",
+        "playerId": "PY912970"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "TW636534": {
+    "playerId": "TW636534",
+    "username": "TestUser_5464",
+    "password": "password123",
+    "gameState": {
+      "player": {
+        "name": "TestUser_5464",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766668834182,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "language": "ru",
+        "playerId": "TW636534"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "MC516847": {
+    "playerId": "MC516847",
+    "username": "TestUser_9077",
+    "password": "password123",
+    "gameState": {
+      "player": {
+        "name": "TestUser_9077",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766668834182,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "language": "ru",
+        "playerId": "MC516847"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "RU765745": {
+    "playerId": "RU765745",
+    "username": "TestUser_8829",
+    "password": "password123",
+    "gameState": {
+      "player": {
+        "name": "TestUser_8829",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766668834182,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "language": "ru",
+        "playerId": "RU765745"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "TI437637": {
+    "playerId": "TI437637",
+    "username": "BadUser_475",
+    "password": "password",
+    "gameState": {
+      "player": {
+        "name": "BadUser_475",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766668834182,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "language": "en",
+        "playerId": "TI437637"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "PZ688947": {
+    "playerId": "PZ688947",
+    "username": "TestUser_1766673781344",
+    "password": "password123",
+    "gameState": {
+      "player": {
+        "name": "TestUser_1766673781344",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766668834182,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "language": "en",
+        "playerId": "PZ688947"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "MO498759": {
+    "playerId": "MO498759",
+    "username": "TestUser_1766673871141",
+    "password": "password123",
+    "gameState": {
+      "player": {
+        "name": "TestUser_1766673871141",
+        "level": 1,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766673803292,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "language": "en",
+        "credits": 50,
+        "skillPoints": 0,
+        "inventory": [],
+        "unlockedSkills": [],
+        "playerId": "MO498759"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "LE048537": {
+    "playerId": "LE048537",
+    "username": "TestUser_1766673959270",
+    "password": "password123",
+    "gameState": {
+      "player": {
+        "name": "TestUser_1766673959270",
+        "level": 10,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766673909516,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "language": "en",
+        "credits": 1000,
+        "skillPoints": 5,
+        "inventory": [],
+        "unlockedSkills": [],
+        "playerId": "LE048537"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "AW383389": {
+    "playerId": "AW383389",
+    "username": "TestUser_1766674057694",
+    "password": "password123",
+    "gameState": {
+      "player": {
+        "name": "TestUser_1766674057694",
+        "level": 10,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766674004675,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "language": "en",
+        "credits": 800,
+        "skillPoints": 0,
+        "inventory": [
+          "streak_freeze"
+        ],
+        "unlockedSkills": [],
+        "playerId": "AW383389"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
+      "messageCount": 0
+    }
+  },
+  "XI183099": {
+    "playerId": "XI183099",
+    "username": "TestUser_1766674078343",
+    "password": "password123",
+    "gameState": {
+      "player": {
+        "name": "TestUser_1766674078343",
+        "level": 10,
+        "xp": 0,
+        "totalXpEarned": 0,
+        "title": "Curious Beginner",
+        "titleLevel": 1,
+        "stats": {
+          "health": 100,
+          "energy": 100,
+          "focus": 50,
+          "discipline": 50,
+          "productivity": 50,
+          "consistency": 50,
+          "creativity": 50,
+          "kindness": 50,
+          "awareness": 50
+        },
+        "streak": 0,
+        "longestStreak": 0,
+        "currentDay": 25,
+        "lastMessageDay": "Thu Dec 25 2025",
+        "lastMessageTime": 1766674004675,
+        "badges": [],
+        "statistics": {
+          "totalMessages": 0,
+          "totalXpEarned": 0,
+          "averageXpPerMessage": 0,
+          "highestSingleMessageXp": 0,
+          "totalHighQualityMessages": 0,
+          "totalDaysActive": 1,
+          "favoriteQuestionType": "Analytical",
+          "questsCompleted": 0,
+          "dailyQuestsCompletedTotal": 0
+        },
+        "personalityType": "Unknown",
+        "language": "en",
+        "credits": 800,
+        "skillPoints": 4,
+        "inventory": [
+          "streak_freeze"
+        ],
+        "unlockedSkills": [
+          "neural_efficiency_1"
+        ],
+        "playerId": "XI183099"
+      },
+      "dailyQuests": [],
+      "weeklyQuests": [],
+      "lastQuestGenerationDay": "Thu Dec 25 2025",
+      "lastWeeklyQuestGenDate": "Thu Dec 25 2025",
       "messageCount": 0
     }
   }

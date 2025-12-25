@@ -16,7 +16,7 @@
 
     <style>
         /* ============================================
-           BATTLE CHAT SPLIT LAYOUT
+           BATTLE CHAT SPLIT LAYOUT - ENHANCED
            ============================================ */
 
         body {
@@ -34,157 +34,300 @@
             width: 35%;
             min-width: 280px;
             max-width: 400px;
-            background: rgba(0, 0, 0, 0.4);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 20, 40, 0.8) 100%);
+            border-right: 1px solid rgba(0, 210, 255, 0.2);
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 25px;
             overflow-y: auto;
         }
 
         .battle-sidebar h2 {
             text-align: center;
-            font-size: 20px;
-            margin-bottom: 20px;
-            color: var(--primary-color);
+            font-size: 22px;
+            margin-bottom: 25px;
+            background: linear-gradient(45deg, var(--primary-color), #00ff88);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
         }
 
         .room-code-display {
             text-align: center;
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            padding: 12px 24px;
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 25px;
             margin-bottom: 20px;
-            font-size: 14px;
+            font-size: 13px;
+            letter-spacing: 1px;
         }
 
         .room-code-display span {
             font-weight: 800;
-            color: white;
-            font-size: 18px;
+            color: var(--primary-color);
+            font-size: 20px;
+            text-shadow: 0 0 10px var(--primary-color);
         }
 
         .battle-status {
             text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            margin-bottom: 20px;
-            padding: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            padding: 10px 15px;
             background: rgba(0, 255, 0, 0.1);
-            border-radius: 8px;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 10px;
+            color: #00ff00;
+            text-transform: uppercase;
         }
 
-        /* Player Cards in Sidebar */
-        .player-mini-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+        /* XP Difference Indicator */
+        .xp-difference {
+            text-align: center;
             padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .xp-difference.winning {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.15), rgba(0, 210, 255, 0.1));
+            border: 1px solid rgba(0, 255, 0, 0.4);
+            color: #00ff88;
+        }
+
+        .xp-difference.losing {
+            background: linear-gradient(135deg, rgba(255, 50, 100, 0.15), rgba(255, 0, 153, 0.1));
+            border: 1px solid rgba(255, 50, 100, 0.4);
+            color: #ff6688;
+        }
+
+        .xp-difference.tied {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Player Cards in Sidebar - Enhanced */
+        .player-mini-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
             margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-mini-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            opacity: 0.5;
         }
 
         .player-mini-card.you {
-            border-color: var(--primary-color);
-            background: rgba(0, 210, 255, 0.05);
+            border-color: rgba(0, 210, 255, 0.4);
+            background: linear-gradient(135deg, rgba(0, 210, 255, 0.08), rgba(0, 100, 150, 0.05));
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.1), inset 0 0 30px rgba(0, 210, 255, 0.03);
+        }
+
+        .player-mini-card.you::before {
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
         }
 
         .player-mini-card.opponent {
-            border-color: var(--accent-color);
-            background: rgba(255, 0, 153, 0.05);
+            border-color: rgba(255, 0, 153, 0.4);
+            background: linear-gradient(135deg, rgba(255, 0, 153, 0.08), rgba(150, 0, 80, 0.05));
+            box-shadow: 0 0 30px rgba(255, 0, 153, 0.1), inset 0 0 30px rgba(255, 0, 153, 0.03);
+        }
+
+        .player-mini-card.opponent::before {
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+        }
+
+        /* Pulse animation when XP changes */
+        .player-mini-card.pulse {
+            animation: cardPulse 0.5s ease;
+        }
+
+        @keyframes cardPulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .player-mini-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 12px;
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
         .player-mini-avatar {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 18px;
+            font-size: 20px;
+            position: relative;
         }
 
         .player-mini-card.you .player-mini-avatar {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), #00ff88);
             color: black;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
         }
 
         .player-mini-card.opponent .player-mini-avatar {
-            background: var(--accent-color);
+            background: linear-gradient(135deg, var(--accent-color), #ff6688);
             color: white;
+            box-shadow: 0 0 20px rgba(255, 0, 153, 0.5);
         }
 
         .player-mini-info h3 {
-            font-size: 16px;
-            margin: 0;
+            font-size: 18px;
+            margin: 0 0 3px 0;
+            font-weight: 700;
         }
 
         .player-mini-info .level {
             font-size: 12px;
-            opacity: 0.7;
+            opacity: 0.6;
+            font-weight: 600;
         }
 
+        /* Enhanced XP Bar */
         .player-xp-bar {
-            background: rgba(255, 255, 255, 0.1);
-            height: 8px;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            height: 14px;
+            border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
 
         .player-xp-fill {
             height: 100%;
-            transition: width 0.5s ease;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
         .player-mini-card.you .player-xp-fill {
-            background: var(--primary-color);
-            box-shadow: 0 0 10px var(--primary-color);
+            background: linear-gradient(90deg, var(--primary-color), #00ff88);
+            box-shadow: 0 0 20px var(--primary-color), inset 0 2px 4px rgba(255, 255, 255, 0.3);
         }
 
         .player-mini-card.opponent .player-xp-fill {
-            background: var(--accent-color);
-            box-shadow: 0 0 10px var(--accent-color);
+            background: linear-gradient(90deg, var(--accent-color), #ff6688);
+            box-shadow: 0 0 20px var(--accent-color), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Animated shine effect on bars */
+        .player-xp-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: barShine 2s infinite;
+        }
+
+        @keyframes barShine {
+            0% {
+                left: -100%;
+            }
+
+            50%,
+            100% {
+                left: 100%;
+            }
         }
 
         .player-xp-text {
             display: flex;
             justify-content: space-between;
-            font-size: 11px;
-            opacity: 0.8;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .player-xp-text span:last-child {
+            color: white;
+            font-weight: 800;
         }
 
         .vs-divider {
             text-align: center;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 800;
             background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin: 5px 0;
+            margin: 10px 0;
+            text-shadow: 0 0 30px rgba(255, 0, 153, 0.3);
+            animation: vsPulse 2s infinite;
+        }
+
+        @keyframes vsPulse {
+
+            0%,
+            100% {
+                opacity: 0.7;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
         }
 
         .back-to-arena-btn {
             margin-top: auto;
             text-align: center;
+            padding-top: 20px;
         }
 
         .back-to-arena-btn a {
             display: inline-block;
-            padding: 10px 20px;
-            font-size: 12px;
+            padding: 12px 25px;
+            font-size: 13px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
         }
 
-        /* Right side: Chat (reuse existing styles) */
+        .back-to-arena-btn a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Right side: Chat */
         .chat-side {
             flex: 1;
             display: flex;
@@ -198,6 +341,7 @@
             flex-direction: column;
             border-radius: 0;
             height: 100vh;
+            background: rgba(0, 0, 0, 0.3);
         }
 
         .chat-side .chat-area {
@@ -216,10 +360,8 @@
 
             .battle-sidebar {
                 display: none;
-                /* Hide full sidebar on mobile */
             }
 
-            /* Floating battle bar for mobile */
             .mobile-battle-bar {
                 display: flex !important;
                 position: fixed;
@@ -227,12 +369,12 @@
                 left: 0;
                 right: 0;
                 z-index: 1000;
-                background: rgba(0, 0, 0, 0.95);
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                padding: 10px 15px;
+                background: linear-gradient(180deg, rgba(0, 0, 0, 0.98), rgba(0, 20, 40, 0.95));
+                border-bottom: 2px solid rgba(0, 210, 255, 0.3);
+                padding: 12px 15px;
                 align-items: center;
                 justify-content: space-between;
-                gap: 10px;
+                gap: 8px;
             }
 
             .mobile-battle-bar .player-compact {
@@ -252,8 +394,8 @@
             }
 
             .mobile-battle-bar .mini-avatar {
-                width: 32px;
-                height: 32px;
+                width: 36px;
+                height: 36px;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
@@ -263,13 +405,15 @@
             }
 
             .mobile-battle-bar .player-compact.you .mini-avatar {
-                background: var(--primary-color);
+                background: linear-gradient(135deg, var(--primary-color), #00ff88);
                 color: black;
+                box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
             }
 
             .mobile-battle-bar .player-compact.opponent .mini-avatar {
-                background: var(--accent-color);
+                background: linear-gradient(135deg, var(--accent-color), #ff6688);
                 color: white;
+                box-shadow: 0 0 15px rgba(255, 0, 153, 0.5);
             }
 
             .mobile-battle-bar .player-stats {
@@ -279,8 +423,8 @@
             }
 
             .mobile-battle-bar .player-stats .name {
-                font-weight: 600;
-                max-width: 80px;
+                font-weight: 700;
+                max-width: 70px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -288,56 +432,59 @@
 
             .mobile-battle-bar .player-stats .xp {
                 opacity: 0.7;
+                font-weight: 600;
             }
 
             .mobile-battle-bar .vs-mini {
                 font-weight: 800;
-                font-size: 14px;
+                font-size: 16px;
                 background: linear-gradient(45deg, var(--accent-color), var(--primary-color));
                 background-clip: text;
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
+                animation: vsPulse 2s infinite;
             }
 
             .mobile-battle-bar .progress-mini {
-                width: 50px;
-                height: 4px;
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 4px;
+                width: 45px;
+                height: 6px;
+                background: rgba(0, 0, 0, 0.5);
+                border-radius: 6px;
                 overflow: hidden;
+                border: 1px solid rgba(255, 255, 255, 0.1);
             }
 
             .mobile-battle-bar .player-compact.you .progress-mini .fill {
-                background: var(--primary-color);
+                background: linear-gradient(90deg, var(--primary-color), #00ff88);
+                box-shadow: 0 0 8px var(--primary-color);
             }
 
             .mobile-battle-bar .player-compact.opponent .progress-mini .fill {
-                background: var(--accent-color);
+                background: linear-gradient(90deg, var(--accent-color), #ff6688);
+                box-shadow: 0 0 8px var(--accent-color);
             }
 
             .mobile-battle-bar .fill {
                 height: 100%;
-                transition: width 0.3s;
+                transition: width 0.3s ease;
             }
 
-            /* Chat takes full width but with top padding for bar */
             .chat-side {
-                padding-top: 60px;
+                padding-top: 70px;
             }
 
             .chat-side .chat-container {
-                height: calc(100vh - 60px);
+                height: calc(100vh - 70px);
             }
         }
 
-        /* Desktop: Hide mobile bar */
         @media (min-width: 901px) {
             .mobile-battle-bar {
                 display: none !important;
             }
         }
 
-        /* Winner overlay */
+        /* Winner overlay - Enhanced */
         .winner-overlay {
             display: none;
             position: fixed;
@@ -345,7 +492,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
+            background: radial-gradient(ellipse at center, rgba(0, 30, 60, 0.95), rgba(0, 0, 0, 0.98));
             z-index: 2000;
             align-items: center;
             justify-content: center;
@@ -355,21 +502,63 @@
 
         .winner-overlay.show {
             display: flex;
+            animation: overlayFadeIn 0.5s ease;
+        }
+
+        @keyframes overlayFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .winner-overlay .trophy {
-            font-size: 80px;
+            font-size: 100px;
             margin-bottom: 20px;
+            animation: trophyBounce 1s ease infinite;
+        }
+
+        @keyframes trophyBounce {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-10px) scale(1.05);
+            }
         }
 
         .winner-overlay h1 {
-            font-size: 36px;
-            margin-bottom: 10px;
+            font-size: 48px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px currentColor;
         }
 
         .winner-overlay p {
-            opacity: 0.7;
-            margin-bottom: 30px;
+            opacity: 0.8;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+
+        .winner-overlay .btn {
+            padding: 15px 40px;
+            font-size: 16px;
+        }
+
+        /* Confetti canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2001;
         }
     </style>
 </head>
@@ -413,6 +602,11 @@
 
             <div class="battle-status" id="sidebar-status">
                 CONNECTING...
+            </div>
+
+            <!-- XP Difference Indicator -->
+            <div class="xp-difference tied" id="xp-difference">
+                ⚖️ Battle Starting...
             </div>
 
             <!-- You -->
@@ -502,6 +696,9 @@
         <p id="winner-text">You reached 250 XP first!</p>
         <a href="battle.html" class="btn btn-primary">Back to Arena</a>
     </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
 
     <!-- Scripts -->
     <script src="script.js"></script>

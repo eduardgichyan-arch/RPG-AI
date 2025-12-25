@@ -17,11 +17,12 @@
 
 <body>
     <canvas id="particles-bg"></canvas>
+    <div class="toast-container" id="toastContainer"></div>
 
     <div class="container main-layout">
         <!-- Sidebar -->
         <div class="glass-panel profile-sidebar">
-            <h2 class="sidebar-title">Your Profile</h2>
+            <h2 class="sidebar-title" data-i18n="profile_title">Your Profile</h2>
 
             <!-- New Avatar Section -->
             <div class="profile-avatar-container">
@@ -31,18 +32,18 @@
             </div>
 
             <div class="sidebar-info-block centered-info">
-                <div class="label-sm">Personality Type</div>
+                <div class="label-sm" data-i18n="personality_type">Personality Type</div>
                 <div class="type-badge">
-                    <span class="type-lg" id="sidebar-type">Scanning...</span>
+                    <span class="type-lg" id="sidebar-type" data-i18n="analysis">Scanning...</span>
                 </div>
-                <div class="type-desc" id="sidebar-desc">Analysis in progress...</div>
+                <div class="type-desc" id="sidebar-desc" data-i18n="analysis">Analysis in progress...</div>
             </div>
 
             <div class="separator-line"></div>
 
             <!-- Level -->
             <div class="sidebar-info-block centered-info">
-                <div class="label-sm">Current Level</div>
+                <div class="label-sm" data-i18n="current_level">Current Level</div>
                 <div class="level-display">
                     <span id="sidebar-level">1</span> <span class="text-muted">/ 100</span>
                 </div>
@@ -51,14 +52,22 @@
             <div class="separator-line"></div>
 
             <div class="sidebar-section">
-                <h4 class="section-title">Core Statistics</h4>
+                <h4 class="section-title" data-i18n="core_stats">Core Statistics</h4>
                 <div id="sidebar-stats" class="stats-list">
                     <!-- Stats injected here -->
                 </div>
             </div>
 
             <div class="sidebar-footer">
-                <a href="/dashboard.html" class="btn btn-full">Dashboard ➜</a>
+                <div style="margin-bottom: 10px;">
+                    <select id="lang-switcher" class="glass-panel"
+                        style="width: 100%; padding: 8px; border-radius: 6px; color: white; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.3); outline: none; cursor: pointer; font-size: 14px;">
+                        <option value="en">🇺🇸 English</option>
+                        <option value="ru">🇷🇺 Русский</option>
+                        <option value="am">🇦🇲 Հայերեն</option>
+                    </select>
+                </div>
+                <a href="/dashboard.html" class="btn btn-full" data-i18n="dashboard_link">Dashboard ➜</a>
             </div>
         </div>
 
@@ -67,11 +76,11 @@
             <!-- Header -->
             <div class="chat-header">
                 <div class="header-title">
-                    <h1>⭐ AI Chat RPG</h1>
+                    <h1 data-i18n="chat_header">⭐ AI Chat RPG</h1>
                     <div class="header-stats">
-                        <span>Lvl <strong id="level">1</strong></span>
-                        <span>XP <strong id="xp">0/100</strong></span>
-                        <span>Focus <strong id="focus">50</strong></span>
+                        <span data-i18n="lvl">Lvl</span> <strong id="level">1</strong>
+                        <span data-i18n="xp">XP</span> <strong id="xp">0/100</strong>
+                        <span data-i18n="focus">Focus</span> <strong id="focus">50</strong>
                     </div>
                 </div>
             </div>
@@ -79,7 +88,7 @@
             <!-- Chat Area -->
             <div class="chat-area" id="chat">
                 <div class="message ai">
-                    <div class="message-bubble">
+                    <div class="message-bubble" data-i18n="initial_greeting">
                         Greetings, Traveler! I am your AI Guide. Speak with me to earn XP, level up, and unlock your
                         true potential. 🌌
                     </div>
@@ -89,7 +98,8 @@
             <!-- Input Area -->
             <div class="input-area">
                 <div class="input-wrapper">
-                    <input id="message-input" placeholder="Ask me anything..." autocomplete="off">
+                    <input id="message-input" data-i18n-ph="input_ph" placeholder="Ask me anything..."
+                        autocomplete="off">
                 </div>
                 <button id="sendBtn" class="send-btn" title="Send Message">
                     ➤
@@ -165,6 +175,7 @@
     </div>
 
     <!-- Logic -->
+    <script src="locales.js"></script>
     <script src="script.js"></script>
     <script src="quiz.js"></script>
 
